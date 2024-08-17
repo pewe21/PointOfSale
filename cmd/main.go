@@ -14,6 +14,8 @@ func main() {
 
 	conn := database.InitDB(conf.Database)
 
+	//redis := cache.NewRedisCache(conf.Redis)
+
 	app := fiber.New()
 	//auth
 	api.NewAuthApi(app, conn, &conf.Jwt)
