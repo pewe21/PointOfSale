@@ -23,6 +23,7 @@ func main() {
 		SigningKey: jwtware.SigningKey{Key: []byte(conf.Jwt.Secret)},
 	}))
 	api.NewUserApi(app, conn)
+	api.NewCustomerApi(app, conn)
 
 	err := app.Listen(conf.Server.Host + ":" + conf.Server.Port)
 	if err != nil {

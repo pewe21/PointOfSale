@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
@@ -55,8 +54,6 @@ func (h userHandler) Update(ctx *fiber.Ctx) error {
 	var req dto.UpdateUserRequest
 
 	id := ctx.Params("id")
-
-	fmt.Println(id)
 
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(err.Error(), http.StatusBadRequest))

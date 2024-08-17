@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"golang.org/x/crypto/bcrypt"
@@ -71,7 +72,12 @@ func (s service) Update(ctx context.Context, req dto.UpdateUserRequest, id strin
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	err := s.UserRepository.Delete(ctx, req)
+	_, err := s.UserRepository.FindById(ctx, req)
+	if err != nil {
+		return errors.New("data user not found")
+	}
+
+	err = s.UserRepository.Delete(ctx, req)
 	if err != nil {
 		return err
 	}

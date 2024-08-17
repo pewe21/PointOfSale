@@ -24,10 +24,10 @@ func InitDB(conf config.Database) *sql.DB {
 	}
 
 	err = db.Ping()
-	log.Printf("PINGING SUCCESS")
+
 	if err != nil {
 		log.Fatal("failed to ping database")
 	}
-
+	log.Printf("PINGING SUCCESS")
 	return db
 }
