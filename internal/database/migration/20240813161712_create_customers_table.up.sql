@@ -10,5 +10,6 @@ CREATE TABLE customers
     verified_at timestamp without time zone,
     created_at  timestamp without time zone default current_timestamp,
     updated_at  timestamp without time zone,
-    deleted_at  timestamp without time zone
+    deleted_at  timestamp without time zone,
+    PRIMARY KEY (id)
 )
