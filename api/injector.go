@@ -10,6 +10,7 @@ import (
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/handler"
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
+	"github.com/pewe21/PointOfSale/internal/module/customer"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
 
@@ -20,5 +21,10 @@ func InitializedUser(conn *sql.DB) domain.UserHandler {
 
 func InitializedAuthentication(conn *sql.DB, cnf *config.Jwt) domain.AuthHandler {
 	wire.Build(user.NewRepository, authentication.NewService, handler.NewAuthenticationHandler)
+	return nil
+}
+
+func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
+	wire.Build(customer.NewRepository, customer.NewService, handler.NewHandlerCustomer)
 	return nil
 }

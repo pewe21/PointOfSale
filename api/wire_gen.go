@@ -12,6 +12,7 @@ import (
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/handler"
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
+	"github.com/pewe21/PointOfSale/internal/module/customer"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
 
@@ -29,4 +30,11 @@ func InitializedAuthentication(conn *sql.DB, cnf *config.Jwt) domain.AuthHandler
 	authService := authentication.NewService(userRepository, cnf)
 	authHandler := handler.NewAuthenticationHandler(authService)
 	return authHandler
+}
+
+func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
+	customerRepository := customer.NewRepository(conn)
+	customerService := customer.NewService(customerRepository)
+	customerHandler := handler.NewHandlerCustomer(customerService)
+	return customerHandler
 }
