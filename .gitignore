@@ -1,0 +1,5 @@
+.env
+http_request/*
+.idea
+.vscode
+*.exe
