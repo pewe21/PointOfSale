@@ -9,11 +9,11 @@ import (
 )
 
 type service struct {
-	domain.CustomerRepository
+	domain.TypeRepository
 }
 
-func NewService(customerRepository domain.CustomerRepository) domain.CustomerService {
-	return &service{CustomerRepository: customerRepository}
+func NewService(customerRepository domain.TypeRepository) domain.CustomerService {
+	return &service{TypeRepository: customerRepository}
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateCustomerRequest) error {
@@ -28,7 +28,7 @@ func (s service) Save(ctx context.Context, req dto.CreateCustomerRequest) error 
 		Password: string(password),
 		Email:    req.Email,
 	}
-	err = s.CustomerRepository.Save(ctx, &customer)
+	err = s.TypeRepository.Save(ctx, &customer)
 	if err != nil {
 		return errors.New("error creating customer")
 	}
@@ -42,7 +42,7 @@ func (s service) Update(ctx context.Context, req dto.UpdateCustomerRequest, id s
 		Phone:    req.Phone,
 		Address:  req.Address,
 	}
-	err := s.CustomerRepository.Update(ctx, &customer, id)
+	err := s.TypeRepository.Update(ctx, &customer, id)
 	if err != nil {
 		return errors.New("error updating customer")
 	}
@@ -52,7 +52,7 @@ func (s service) Update(ctx context.Context, req dto.UpdateCustomerRequest, id s
 
 func (s service) Index(ctx context.Context) ([]dto.CustomerData, error) {
 	var data []dto.CustomerData
-	customers, err := s.CustomerRepository.FindAll(ctx)
+	customers, err := s.TypeRepository.FindAll(ctx)
 	if err != nil {
 		return nil, errors.New("error getting customers")
 	}
@@ -72,7 +72,7 @@ func (s service) Index(ctx context.Context) ([]dto.CustomerData, error) {
 }
 
 func (s service) GetById(ctx context.Context, id string) (customer domain.Customer, err error) {
-	customer, err = s.CustomerRepository.FindById(ctx, id)
+	customer, err = s.TypeRepository.FindById(ctx, id)
 	if err != nil {
 		return domain.Customer{}, errors.New("customer not found")
 	}
@@ -81,7 +81,7 @@ func (s service) GetById(ctx context.Context, id string) (customer domain.Custom
 }
 
 func (s service) GetByUsername(ctx context.Context, username string) (customer domain.Customer, err error) {
-	customer, err = s.CustomerRepository.FindByUsername(ctx, username)
+	customer, err = s.TypeRepository.FindByUsername(ctx, username)
 	if err != nil {
 		return domain.Customer{}, errors.New("customer not found")
 	}
@@ -90,7 +90,7 @@ func (s service) GetByUsername(ctx context.Context, username string) (customer d
 }
 
 func (s service) GetByEmail(ctx context.Context, email string) (customer domain.Customer, err error) {
-	customer, err = s.CustomerRepository.FindByEmail(ctx, email)
+	customer, err = s.TypeRepository.FindByEmail(ctx, email)
 	if err != nil {
 		return domain.Customer{}, errors.New("customer not found")
 	}
@@ -99,12 +99,12 @@ func (s service) GetByEmail(ctx context.Context, email string) (customer domain.
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	_, err := s.CustomerRepository.FindById(ctx, req)
+	_, err := s.TypeRepository.FindById(ctx, req)
 	if err != nil {
 		return err
 	}
 
-	err = s.CustomerRepository.Delete(ctx, req)
+	err = s.TypeRepository.Delete(ctx, req)
 	if err != nil {
 		return err
 	}

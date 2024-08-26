@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"database/sql"
+	"github.com/gofiber/fiber/v2"
+	"github.com/pewe21/PointOfSale/dto"
 	"time"
 )
 
@@ -18,13 +20,25 @@ type Supplier struct {
 }
 
 type SupplierRepository interface {
-	Save(ctx context.Context, supplier *Supplier) error
-	Update(ctx context.Context, supplier *Supplier, id string) error
-	FindAll(ctx context.Context) (suppliers []Supplier, err error)
+	Save(ctx context.Context, customer *Supplier) error
+	Update(ctx context.Context, customer *Supplier, id string) error
 	FindById(ctx context.Context, id string) (supplier Supplier, err error)
+	FindAll(ctx context.Context) (suppliers []Supplier, err error)
 	Delete(ctx context.Context, id string) error
 }
 
 type SupplierService interface {
-	Save(ctx context.Context, req *Supplier) (id string, err error)
+	Save(ctx context.Context, req dto.CreateSupplierRequest) error
+	Update(ctx context.Context, req dto.UpdateSupplierRequest, id string) error
+	Index(ctx context.Context) ([]dto.SupplierData, error)
+	GetById(ctx context.Context, id string) (supplier dto.SupplierData, err error)
+	Delete(ctx context.Context, req string) error
+}
+
+type SupplierHandler interface {
+	Create(ctx *fiber.Ctx) error
+	Update(ctx *fiber.Ctx) error
+	Index(ctx *fiber.Ctx) error
+	Delete(ctx *fiber.Ctx) error
+	GetById(ctx *fiber.Ctx) error
 }
