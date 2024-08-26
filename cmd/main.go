@@ -12,7 +12,7 @@ import (
 func main() {
 	conf := config.InitializedLoader()
 
-	conn := database.InitDB(conf.Database)
+	conn := database.InitDB(conf.Database, false)
 
 	//redis := cache.NewRedisCache(conf.Redis)
 
