@@ -11,16 +11,16 @@ import (
 )
 
 type service struct {
-	domain.UserRepository
+	repository domain.UserRepository
 	*config.Jwt
 }
 
 func NewService(userRepository domain.UserRepository, Jwt *config.Jwt) domain.AuthService {
-	return &service{UserRepository: userRepository, Jwt: Jwt}
+	return &service{repository: userRepository, Jwt: Jwt}
 }
 
 func (s service) SignIn(ctx context.Context, req dto.SignInRequest) (string, error) {
-	user, err := s.UserRepository.FindByEmail(ctx, req.Username)
+	user, err := s.repository.FindByEmail(ctx, req.Username)
 	if err != nil {
 		return "", errors.New("username or password incorrect")
 	}

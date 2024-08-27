@@ -29,7 +29,7 @@ type TypeService interface {
 	Save(ctx context.Context, req dto.CreateTypeRequest) error
 	Update(ctx context.Context, req dto.UpdateTypeRequest, id string) error
 	Index(ctx context.Context) ([]dto.TypeData, error)
-	GetById(ctx context.Context, id string) (_type dto.TypeData, err error)
+	GetById(ctx context.Context, id string) (dto.TypeData, error)
 	Delete(ctx context.Context, req string) error
 }
 

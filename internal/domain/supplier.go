@@ -31,7 +31,7 @@ type SupplierService interface {
 	Save(ctx context.Context, req dto.CreateSupplierRequest) error
 	Update(ctx context.Context, req dto.UpdateSupplierRequest, id string) error
 	Index(ctx context.Context) ([]dto.SupplierData, error)
-	GetById(ctx context.Context, id string) (supplier dto.SupplierData, err error)
+	GetById(ctx context.Context, id string) (dto.SupplierData, error)
 	Delete(ctx context.Context, req string) error
 }
 
