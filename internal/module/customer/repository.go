@@ -12,7 +12,7 @@ type repository struct {
 	db *goqu.Database
 }
 
-func NewRepository(db *sql.DB) domain.TypeRepository {
+func NewRepository(db *sql.DB) domain.CustomerRepository {
 	return &repository{db: goqu.New("default", db)}
 }
 

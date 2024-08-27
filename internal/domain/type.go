@@ -18,9 +18,9 @@ type Type struct {
 }
 
 type TypeRepository interface {
-	Save(ctx context.Context, tipe *Type) error
-	Update(ctx context.Context, tipe *Type, id string) error
-	FindById(ctx context.Context, id string) (tipe Type, err error)
+	Save(ctx context.Context, _type *Type) error
+	Update(ctx context.Context, _type *Type, id string) error
+	FindById(ctx context.Context, id string) (_type Type, err error)
 	FindAll(ctx context.Context) (types []Type, err error)
 	Delete(ctx context.Context, id string) error
 }
@@ -29,7 +29,7 @@ type TypeService interface {
 	Save(ctx context.Context, req dto.CreateTypeRequest) error
 	Update(ctx context.Context, req dto.UpdateTypeRequest, id string) error
 	Index(ctx context.Context) ([]dto.TypeData, error)
-	GetById(ctx context.Context, id string) (tipe dto.TypeData, err error)
+	GetById(ctx context.Context, id string) (_type dto.TypeData, err error)
 	Delete(ctx context.Context, req string) error
 }
 

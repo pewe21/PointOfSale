@@ -20,8 +20,8 @@ type Supplier struct {
 }
 
 type SupplierRepository interface {
-	Save(ctx context.Context, customer *Supplier) error
-	Update(ctx context.Context, customer *Supplier, id string) error
+	Save(ctx context.Context, supplier *Supplier) error
+	Update(ctx context.Context, supplier *Supplier, id string) error
 	FindById(ctx context.Context, id string) (supplier Supplier, err error)
 	FindAll(ctx context.Context) (suppliers []Supplier, err error)
 	Delete(ctx context.Context, id string) error
