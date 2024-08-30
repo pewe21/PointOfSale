@@ -11,6 +11,8 @@ import (
 	"github.com/pewe21/PointOfSale/internal/handler"
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
 	"github.com/pewe21/PointOfSale/internal/module/customer"
+	"github.com/pewe21/PointOfSale/internal/module/supplier"
+	_type "github.com/pewe21/PointOfSale/internal/module/type"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
 
@@ -26,5 +28,15 @@ func InitializedAuthentication(conn *sql.DB, cnf *config.Jwt) domain.AuthHandler
 
 func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
 	wire.Build(customer.NewRepository, customer.NewService, handler.NewHandlerCustomer)
+	return nil
+}
+
+func InitializedSupplier(conn *sql.DB) domain.SupplierHandler {
+	wire.Build(supplier.NewRepository, supplier.NewService, handler.NewHandlerSupplier)
+	return nil
+}
+
+func InitializedType(conn *sql.DB) domain.TypeHandler {
+	wire.Build(_type.NewRepository, _type.NewService, handler.NewHandlerType)
 	return nil
 }

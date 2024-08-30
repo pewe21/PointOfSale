@@ -23,12 +23,11 @@ func (r repository) Save(ctx context.Context, supplier *domain.Supplier) error {
 }
 
 func (r repository) Update(ctx context.Context, supplier *domain.Supplier, id string) error {
-	executor := r.db.Update("suppliers").Set(supplier).Set(goqu.Record{
-		"updated_at": sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-	}).Where(goqu.C("id").Eq(id)).Executor()
+	supplier.UpdatedAt = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+	executor := r.db.Update("suppliers").Set(supplier).Where(goqu.C("id").Eq(id)).Executor()
 	_, err := executor.ExecContext(ctx)
 	return err
 }

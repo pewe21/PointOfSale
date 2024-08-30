@@ -59,6 +59,7 @@ func (s service) Index(ctx context.Context) ([]dto.SupplierData, error) {
 	}
 	for _, supplier := range suppliers {
 		s := dto.SupplierData{
+			Id:      supplier.Id,
 			Name:    supplier.Name,
 			Email:   supplier.Email,
 			Address: supplier.Address,
@@ -77,6 +78,7 @@ func (s service) GetById(ctx context.Context, id string) (dto.SupplierData, erro
 		return data, errors.New("error getting data supplier")
 	}
 	data = dto.SupplierData{
+		Id:      supplier.Id,
 		Name:    supplier.Name,
 		Email:   supplier.Email,
 		Address: supplier.Address,

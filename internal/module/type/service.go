@@ -55,6 +55,7 @@ func (s service) Index(ctx context.Context) ([]dto.TypeData, error) {
 
 	for _, _type := range types {
 		t := dto.TypeData{
+			Id:          _type.Id,
 			Name:        _type.Name,
 			Description: _type.Description,
 		}
@@ -71,6 +72,7 @@ func (s service) GetById(ctx context.Context, id string) (dto.TypeData, error) {
 		return data, errors.New("error getting type")
 	}
 	data = dto.TypeData{
+		Id:          _type.Id,
 		Name:        _type.Name,
 		Description: _type.Description,
 	}

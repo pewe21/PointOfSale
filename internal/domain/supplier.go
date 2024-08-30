@@ -9,12 +9,12 @@ import (
 )
 
 type Supplier struct {
-	Id        string       `json:"id" db:"id" goqu:"skipinsert"`
+	Id        string       `json:"id" db:"id" goqu:"skipinsert,skipupdate"`
 	Name      string       `json:"name" db:"name"`
 	Email     string       `json:"email" db:"email"`
 	Address   string       `json:"address" db:"address"`
 	Phone     string       `json:"phone" db:"phone"`
-	CreatedAt time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert"`
+	CreatedAt time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert,skipupdate"`
 	UpdatedAt sql.NullTime `json:"updated_at" db:"updated_at"`
 	DeletedAt sql.NullTime `json:"deleted_at" db:"deleted_at"`
 }

@@ -24,6 +24,8 @@ func main() {
 	}))
 	api.NewUserApi(app, conn)
 	api.NewCustomerApi(app, conn)
+	api.NewSupplierApi(app, conn)
+	api.NewTypeApi(app, conn)
 
 	err := app.Listen(conf.Server.Host + ":" + conf.Server.Port)
 	if err != nil {
