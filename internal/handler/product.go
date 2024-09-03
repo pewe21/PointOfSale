@@ -3,97 +3,88 @@ package handler
 import (
 	"context"
 	"github.com/gofiber/fiber/v2"
-	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/response"
 	"net/http"
 	"time"
 )
 
-type typeHandler struct {
-	service domain.TypeService
+type handlerProduct struct {
+	service domain.ProductService
 }
 
-func NewHandlerType(service domain.TypeService) domain.TypeHandler {
-	return &typeHandler{service: service}
+func NewHandlerProduct(service domain.ProductService) domain.ProductHandler {
+	return &handlerProduct{service: service}
 }
 
-func (h typeHandler) Create(ctx *fiber.Ctx) error {
+func (h handlerProduct) Index(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
-
-	var req dto.CreateTypeRequest
-
-	if err := ctx.BodyParser(&req); err != nil {
-		return ctx.SendStatus(http.StatusUnprocessableEntity)
-	}
-
-	if err := h.service.Save(c, req); err != nil {
+	products, err := h.service.Index(c)
+	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 	}
 
-	return ctx.Status(http.StatusCreated).JSON(response.ResponseCreateSuccess())
-
+	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(products))
 }
 
-func (h typeHandler) Update(ctx *fiber.Ctx) error {
+func (h handlerProduct) GetById(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 	id := ctx.Params("id")
+	product, err := h.service.GetById(c, id)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+	}
 
-	var req dto.UpdateTypeRequest
+	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(product))
+}
 
-	if err := ctx.BodyParser(&req); err != nil {
+func (h handlerProduct) Create(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
+	defer cancel()
+	product := domain.Product{}
+	if err := ctx.BodyParser(&product); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
 
-	_, err := h.service.GetById(c, id)
-	if err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(err.Error(), http.StatusBadRequest))
-	}
-
-	err = h.service.Update(c, req, id)
+	err := h.service.Create(c, &product)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response.ResponseCreateSuccess())
+}
+
+func (h handlerProduct) Update(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
+	defer cancel()
+	id := ctx.Params("id")
+	product := domain.Product{}
+	if err := ctx.BodyParser(&product); err != nil {
+		return ctx.SendStatus(http.StatusUnprocessableEntity)
+	}
+
+	err := h.service.Update(c, &product, id)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(""))
 }
 
-func (h typeHandler) Index(ctx *fiber.Ctx) error {
+func (h handlerProduct) Delete(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
-
-	_type, err := h.service.Index(c)
-	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
-	}
-
-	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(_type))
-}
-
-func (h typeHandler) Delete(ctx *fiber.Ctx) error {
-	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
-	defer cancel()
-
 	id := ctx.Params("id")
 
 	err := h.service.Delete(c, id)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(""))
-}
-
-func (h typeHandler) GetById(ctx *fiber.Ctx) error {
-	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
-	defer cancel()
-	id := ctx.Params("id")
-	_type, err := h.service.GetById(c, id)
-	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
-	}
-
-	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(_type))
 }
