@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"errors"
+	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 )
 
@@ -15,13 +16,48 @@ func NewService(repository domain.ProductRepository) domain.ProductService {
 
 }
 
+func (s service) IndexNew(ctx context.Context) (productsx []dto.ProductxDto, err error) {
+	prod, err := s.repository.FindAll(ctx)
+
+	for _, v := range prod {
+		var product dto.ProductxDto
+		product = dto.ProductxDto{
+			ID:   v.Id,
+			Name: v.Name,
+			Supplier: dto.Supplierx{
+				ID:   v.SupplierId,
+				Name: v.SupplierName,
+			},
+		}
+		productsx = append(productsx, product)
+	}
+	return
+}
+
 func (s service) Index(ctx context.Context) (products []domain.ProductWithDetail, err error) {
 	products, err = s.repository.FindAll(ctx)
 	return
 }
 
-func (s service) GetById(ctx context.Context, id string) (product domain.ProductWithDetail, err error) {
-	product, err = s.repository.FindById(ctx, id)
+func (s service) GetById(ctx context.Context, id string) (product dto.ProductxDto, err error) {
+	prd, errs := s.repository.FindById(ctx, id)
+
+	if errs != nil {
+		return product, errs
+	}
+
+	if prd.Id == "" {
+		return product, errors.New("product not found")
+	}
+
+	product = dto.ProductxDto{
+		ID:   prd.Id,
+		Name: prd.Name,
+		Supplier: dto.Supplierx{
+			ID:   prd.SupplierId,
+			Name: prd.SupplierName,
+		},
+	}
 	return
 }
 

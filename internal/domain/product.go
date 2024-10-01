@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/pewe21/PointOfSale/dto"
 	"time"
 )
 
@@ -39,7 +40,8 @@ type ProductRepository interface {
 }
 type ProductService interface {
 	Index(ctx context.Context) (products []ProductWithDetail, err error)
-	GetById(ctx context.Context, id string) (product ProductWithDetail, err error)
+	IndexNew(ctx context.Context) (productsx []dto.ProductxDto, err error)
+	GetById(ctx context.Context, id string) (product dto.ProductxDto, err error)
 	Create(ctx context.Context, product *Product) error
 	Update(ctx context.Context, product *Product, id string) error
 	Delete(ctx context.Context, id string) error

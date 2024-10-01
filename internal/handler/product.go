@@ -20,7 +20,7 @@ func NewHandlerProduct(service domain.ProductService) domain.ProductHandler {
 func (h handlerProduct) Index(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
-	products, err := h.service.Index(c)
+	products, err := h.service.IndexNew(c)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 	}
