@@ -19,15 +19,15 @@ func NewRepository(db *sql.DB) domain.ProductRepository {
 func (r repository) FindAll(ctx context.Context) (products []domain.ProductWithDetail, err error) {
 	dataset := r.db.From("products").LeftJoin(goqu.T("suppliers"), goqu.On(goqu.Ex{
 		"products.supplier_id": goqu.L("suppliers.id"),
-	})).LeftJoin(goqu.T("types"), goqu.On(goqu.Ex{
-		"products.type_id": goqu.L("types.id"),
+	})).LeftJoin(goqu.T("brands"), goqu.On(goqu.Ex{
+		"products.brand_id": goqu.L("brands.id"),
 	})).Where(goqu.L("products.deleted_at").IsNull()).Select(
 		goqu.L("products.id").As("id"),
 		goqu.L("products.name").As("name"),
 		goqu.L("products.sku").As("sku"),
 		goqu.L("products.stock").As("stock"),
-		goqu.L("products.type_id").As("type_id"),
-		goqu.L("types.name").As("type_name"),
+		goqu.L("products.brand_id").As("brand_id"),
+		goqu.L("brands.name").As("brand_name"),
 		goqu.L("products.supplier_id").As("supplier_id"),
 		goqu.L("suppliers.name").As("supplier_name"),
 		//goqu.L("products.created_at").As("created_at"),
@@ -42,15 +42,15 @@ func (r repository) FindAll(ctx context.Context) (products []domain.ProductWithD
 func (r repository) FindById(ctx context.Context, id string) (product domain.ProductWithDetail, err error) {
 	dataset := r.db.From("products").LeftJoin(goqu.T("suppliers"), goqu.On(goqu.Ex{
 		"products.supplier_id": goqu.L("suppliers.id"),
-	})).LeftJoin(goqu.T("types"), goqu.On(goqu.Ex{
-		"products.type_id": goqu.L("types.id"),
+	})).LeftJoin(goqu.T("brands"), goqu.On(goqu.Ex{
+		"products.brand_id": goqu.L("brands.id"),
 	})).Where(goqu.L("products.deleted_at").IsNull()).Where(goqu.L("products.id").Eq(id)).Select(
 		goqu.L("products.id").As("id"),
 		goqu.L("products.name").As("name"),
 		goqu.L("products.sku").As("sku"),
 		goqu.L("products.stock").As("stock"),
-		goqu.L("products.type_id").As("type_id"),
-		goqu.L("types.name").As("type_name"),
+		goqu.L("products.brand_id").As("brand_id"),
+		goqu.L("brands.name").As("brand_name"),
 		goqu.L("products.supplier_id").As("supplier_id"),
 		goqu.L("suppliers.name").As("supplier_name"),
 		//goqu.L("products.created_at").As("created_at"),

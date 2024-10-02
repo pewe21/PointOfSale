@@ -3,3 +3,4 @@ http_request/*
 .idea
 .vscode
 *.exe
+.air.toml

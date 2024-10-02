@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Type struct {
+type Brand struct {
 	Id          string       `json:"id" db:"id" goqu:"skipinsert,skipupdate"`
 	Name        string       `json:"name" db:"name"`
 	Description string       `json:"description" db:"description"`
@@ -17,23 +17,23 @@ type Type struct {
 	DeletedAt   sql.NullTime `json:"deleted_at" db:"deleted_at"`
 }
 
-type TypeRepository interface {
-	Save(ctx context.Context, _type *Type) error
-	Update(ctx context.Context, _type *Type, id string) error
-	FindById(ctx context.Context, id string) (_type Type, err error)
-	FindAll(ctx context.Context) (types []Type, err error)
+type BrandRepository interface {
+	Save(ctx context.Context, brand *Brand) error
+	Update(ctx context.Context, brand *Brand, id string) error
+	FindById(ctx context.Context, id string) (_type Brand, err error)
+	FindAll(ctx context.Context) (brands []Brand, err error)
 	Delete(ctx context.Context, id string) error
 }
 
-type TypeService interface {
-	Save(ctx context.Context, req dto.CreateTypeRequest) error
-	Update(ctx context.Context, req dto.UpdateTypeRequest, id string) error
-	Index(ctx context.Context) ([]dto.TypeData, error)
-	GetById(ctx context.Context, id string) (dto.TypeData, error)
+type BrandService interface {
+	Save(ctx context.Context, req dto.CreateBrandRequest) error
+	Update(ctx context.Context, req dto.UpdateBrandRequest, id string) error
+	Index(ctx context.Context) ([]dto.BrandData, error)
+	GetById(ctx context.Context, id string) (dto.BrandData, error)
 	Delete(ctx context.Context, req string) error
 }
 
-type TypeHandler interface {
+type BrandHandler interface {
 	Create(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
 	Index(ctx *fiber.Ctx) error

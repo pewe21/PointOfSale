@@ -16,7 +16,7 @@ func NewService(repository domain.ProductRepository) domain.ProductService {
 
 }
 
-func (s service) IndexNew(ctx context.Context) (productsx []dto.ProductxDto, err error) {
+func (s service) IndexNew(ctx context.Context) (products []dto.ProductxDto, err error) {
 	prod, err := s.repository.FindAll(ctx)
 
 	for _, v := range prod {
@@ -28,8 +28,12 @@ func (s service) IndexNew(ctx context.Context) (productsx []dto.ProductxDto, err
 				ID:   v.SupplierId,
 				Name: v.SupplierName,
 			},
+			Brand: dto.Brandx{
+				ID:   v.BrandId,
+				Name: v.BrandName,
+			},
 		}
-		productsx = append(productsx, product)
+		products = append(products, product)
 	}
 	return
 }
@@ -56,6 +60,10 @@ func (s service) GetById(ctx context.Context, id string) (product dto.ProductxDt
 		Supplier: dto.Supplierx{
 			ID:   prd.SupplierId,
 			Name: prd.SupplierName,
+		},
+		Brand: dto.Brandx{
+			ID:   prd.BrandId,
+			Name: prd.BrandName,
 		},
 	}
 	return

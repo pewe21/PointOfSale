@@ -10,19 +10,19 @@ import (
 	"time"
 )
 
-type typeHandler struct {
-	service domain.TypeService
+type brandHandler struct {
+	service domain.BrandService
 }
 
-func NewHandlerType(service domain.TypeService) domain.TypeHandler {
-	return &typeHandler{service: service}
+func NewHandlerType(service domain.BrandService) domain.BrandHandler {
+	return &brandHandler{service: service}
 }
 
-func (h typeHandler) Create(ctx *fiber.Ctx) error {
+func (h brandHandler) Create(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 
-	var req dto.CreateTypeRequest
+	var req dto.CreateBrandRequest
 
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
@@ -36,12 +36,12 @@ func (h typeHandler) Create(ctx *fiber.Ctx) error {
 
 }
 
-func (h typeHandler) Update(ctx *fiber.Ctx) error {
+func (h brandHandler) Update(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 	id := ctx.Params("id")
 
-	var req dto.UpdateTypeRequest
+	var req dto.UpdateBrandRequest
 
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
@@ -60,7 +60,7 @@ func (h typeHandler) Update(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(""))
 }
 
-func (h typeHandler) Index(ctx *fiber.Ctx) error {
+func (h brandHandler) Index(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 
@@ -72,7 +72,7 @@ func (h typeHandler) Index(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(_type))
 }
 
-func (h typeHandler) Delete(ctx *fiber.Ctx) error {
+func (h brandHandler) Delete(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 
@@ -86,7 +86,7 @@ func (h typeHandler) Delete(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(""))
 }
 
-func (h typeHandler) GetById(ctx *fiber.Ctx) error {
+func (h brandHandler) GetById(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
 	id := ctx.Params("id")

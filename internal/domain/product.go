@@ -13,7 +13,7 @@ type Product struct {
 	Name       string       `json:"name" db:"name"`
 	SKU        string       `json:"sku" db:"sku"`
 	Stock      int          `json:"stock" db:"stock"`
-	TypeId     string       `json:"type_id" db:"type_id"`
+	BrandId    string       `json:"brand_id" db:"brand_id"`
 	SupplierId string       `json:"supplier_id" db:"supplier_id"`
 	CreatedAt  time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert,skipupdate"`
 	UpdatedAt  sql.NullTime `json:"updated_at" db:"updated_at"`
@@ -25,8 +25,8 @@ type ProductWithDetail struct {
 	Name         string `json:"name"`
 	SKU          string `json:"sku"`
 	Stock        int    `json:"stock"`
-	TypeId       string `json:"type_id" db:"type_id"`
-	TypeName     string `json:"type_name" db:"type_name"`
+	BrandId      string `json:"brand_id" db:"brand_id"`
+	BrandName    string `json:"brand_name" db:"brand_name"`
 	SupplierId   string `json:"supplier_id" db:"supplier_id"`
 	SupplierName string `json:"supplier_name" db:"supplier_name"`
 }

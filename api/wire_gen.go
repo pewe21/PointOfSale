@@ -12,10 +12,10 @@ import (
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/handler"
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
+	"github.com/pewe21/PointOfSale/internal/module/brand"
 	"github.com/pewe21/PointOfSale/internal/module/customer"
 	"github.com/pewe21/PointOfSale/internal/module/product"
 	"github.com/pewe21/PointOfSale/internal/module/supplier"
-	"github.com/pewe21/PointOfSale/internal/module/type"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
 
@@ -49,11 +49,11 @@ func InitializedSupplier(conn *sql.DB) domain.SupplierHandler {
 	return supplierHandler
 }
 
-func InitializedType(conn *sql.DB) domain.TypeHandler {
-	typeRepository := _type.NewRepository(conn)
-	typeService := _type.NewService(typeRepository)
-	typeHandler := handler.NewHandlerType(typeService)
-	return typeHandler
+func InitializedBrand(conn *sql.DB) domain.BrandHandler {
+	brandRepository := brand.NewRepository(conn)
+	brandService := brand.NewService(brandRepository)
+	brandHandler := handler.NewHandlerType(brandService)
+	return brandHandler
 }
 
 func InitializedProduct(conn *sql.DB) domain.ProductHandler {

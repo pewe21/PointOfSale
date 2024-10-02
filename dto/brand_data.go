@@ -1,17 +1,17 @@
 package dto
 
-type TypeData struct {
+type BrandData struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type CreateTypeRequest struct {
+type CreateBrandRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type UpdateTypeRequest struct {
+type UpdateBrandRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }

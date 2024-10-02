@@ -1,4 +1,4 @@
-CREATE TABLE types
+CREATE TABLE brands
 (
     id          character varying(36) DEFAULT gen_random_uuid() NOT NULL,
     name        character varying(50)                           NOT NULL,
