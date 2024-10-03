@@ -1,0 +1,1 @@
+INSERT INTO public.suppliers (id, name, phone, email, address, created_at, updated_at, deleted_at) VALUES ('23f3f091-6832-47ea-8739-427d93e36faf', 'PT PWAPW', '082332998787', 'pwa@gmail.com', '-', '2012-02-01 21:39:23.000000', null, null);

@@ -12,7 +12,10 @@ import (
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/handler"
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
+	"github.com/pewe21/PointOfSale/internal/module/brand"
 	"github.com/pewe21/PointOfSale/internal/module/customer"
+	"github.com/pewe21/PointOfSale/internal/module/product"
+	"github.com/pewe21/PointOfSale/internal/module/supplier"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
 
@@ -37,4 +40,25 @@ func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
 	customerService := customer.NewService(customerRepository)
 	customerHandler := handler.NewHandlerCustomer(customerService)
 	return customerHandler
+}
+
+func InitializedSupplier(conn *sql.DB) domain.SupplierHandler {
+	supplierRepository := supplier.NewRepository(conn)
+	supplierService := supplier.NewService(supplierRepository)
+	supplierHandler := handler.NewHandlerSupplier(supplierService)
+	return supplierHandler
+}
+
+func InitializedBrand(conn *sql.DB) domain.BrandHandler {
+	brandRepository := brand.NewRepository(conn)
+	brandService := brand.NewService(brandRepository)
+	brandHandler := handler.NewHandlerType(brandService)
+	return brandHandler
+}
+
+func InitializedProduct(conn *sql.DB) domain.ProductHandler {
+	productRepository := product.NewRepository(conn)
+	productService := product.NewService(productRepository)
+	productHandler := handler.NewHandlerProduct(productService)
+	return productHandler
 }

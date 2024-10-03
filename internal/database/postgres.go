@@ -1,14 +1,17 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 	"github.com/pewe21/PointOfSale/internal/config"
 	"log"
+	"time"
 )
 
-func InitDB(conf config.Database) *sql.DB {
+func InitDB(conf config.Database, setLimits bool) *sql.DB {
+
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=%s",
 		conf.Host,
 		conf.Port,
@@ -23,7 +26,14 @@ func InitDB(conf config.Database) *sql.DB {
 		log.Fatal("failed to connect database :" + err.Error())
 	}
 
-	err = db.Ping()
+	if setLimits {
+		fmt.Println("setting limits")
+		db.SetMaxOpenConns(5)
+		db.SetMaxIdleConns(5)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = db.PingContext(ctx)
 
 	if err != nil {
 		log.Fatal("failed to ping database")

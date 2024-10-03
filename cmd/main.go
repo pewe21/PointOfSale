@@ -12,7 +12,7 @@ import (
 func main() {
 	conf := config.InitializedLoader()
 
-	conn := database.InitDB(conf.Database)
+	conn := database.InitDB(conf.Database, false)
 
 	//redis := cache.NewRedisCache(conf.Redis)
 
@@ -24,6 +24,9 @@ func main() {
 	}))
 	api.NewUserApi(app, conn)
 	api.NewCustomerApi(app, conn)
+	api.NewSupplierApi(app, conn)
+	api.NewBrandApi(app, conn)
+	api.NewProductApi(app, conn)
 
 	err := app.Listen(conf.Server.Host + ":" + conf.Server.Port)
 	if err != nil {

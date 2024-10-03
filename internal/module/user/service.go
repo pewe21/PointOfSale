@@ -9,16 +9,16 @@ import (
 )
 
 type service struct {
-	domain.UserRepository
+	repository domain.UserRepository
 }
 
 func NewService(userRepository domain.UserRepository) domain.UserService {
-	return &service{UserRepository: userRepository}
+	return &service{repository: userRepository}
 }
 
 func (s service) Index(ctx context.Context) ([]dto.UserData, error) {
 
-	users, err := s.UserRepository.FindAll(ctx)
+	users, err := s.repository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (s service) Save(ctx context.Context, req dto.CreateUserRequest) error {
 		Password: string(password),
 		Phone:    req.Phone,
 	}
-	err = s.UserRepository.Save(ctx, &user)
+	err = s.repository.Save(ctx, &user)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (s service) Update(ctx context.Context, req dto.UpdateUserRequest, id strin
 		Email: req.Email,
 		Phone: req.Phone,
 	}
-	err := s.UserRepository.Update(ctx, &data, id)
+	err := s.repository.Update(ctx, &data, id)
 	if err != nil {
 		return err
 	}
@@ -72,12 +72,12 @@ func (s service) Update(ctx context.Context, req dto.UpdateUserRequest, id strin
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	_, err := s.UserRepository.FindById(ctx, req)
+	_, err := s.repository.FindById(ctx, req)
 	if err != nil {
 		return errors.New("data user not found")
 	}
 
-	err = s.UserRepository.Delete(ctx, req)
+	err = s.repository.Delete(ctx, req)
 	if err != nil {
 		return err
 	}
