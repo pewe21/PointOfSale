@@ -24,6 +24,7 @@ func (s service) IndexNew(ctx context.Context) (products []dto.ProductxDto, err 
 		product = dto.ProductxDto{
 			ID:   v.Id,
 			Name: v.Name,
+			SKU:  v.SKU,
 			Supplier: dto.Supplierx{
 				ID:   v.SupplierId,
 				Name: v.SupplierName,
@@ -57,6 +58,7 @@ func (s service) GetById(ctx context.Context, id string) (product dto.ProductxDt
 	product = dto.ProductxDto{
 		ID:   prd.Id,
 		Name: prd.Name,
+		SKU:  prd.SKU,
 		Supplier: dto.Supplierx{
 			ID:   prd.SupplierId,
 			Name: prd.SupplierName,
