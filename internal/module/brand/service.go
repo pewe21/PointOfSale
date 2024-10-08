@@ -68,8 +68,13 @@ func (s service) Index(ctx context.Context) ([]dto.BrandData, error) {
 func (s service) GetById(ctx context.Context, id string) (dto.BrandData, error) {
 	var data dto.BrandData
 	brand, err := s.repository.FindById(ctx, id)
+
 	if err != nil {
 		return data, errors.New("error getting brand")
+	}
+
+	if brand.Id == "" {
+		return data, errors.New("brand not found")
 	}
 	data = dto.BrandData{
 		Id:          brand.Id,

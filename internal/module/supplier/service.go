@@ -74,9 +74,15 @@ func (s service) Index(ctx context.Context) ([]dto.SupplierData, error) {
 func (s service) GetById(ctx context.Context, id string) (dto.SupplierData, error) {
 	var data dto.SupplierData
 	supplier, err := s.repository.FindById(ctx, id)
+
 	if err != nil {
 		return data, errors.New("error getting data supplier")
 	}
+
+	if supplier.Id == "" {
+		return data, errors.New("error getting data supplier")
+	}
+
 	data = dto.SupplierData{
 		Id:      supplier.Id,
 		Name:    supplier.Name,
