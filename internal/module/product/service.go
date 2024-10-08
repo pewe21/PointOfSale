@@ -79,7 +79,7 @@ func (s service) Create(ctx context.Context, product *domain.Product) error {
 func (s service) Update(ctx context.Context, product *domain.Product, id string) error {
 	_, err := s.repository.FindById(ctx, id)
 	if err != nil {
-		return errors.New("Product not found")
+		return errors.New("product not found")
 	}
 
 	err = s.repository.Update(ctx, product, id)
@@ -89,7 +89,7 @@ func (s service) Update(ctx context.Context, product *domain.Product, id string)
 func (s service) Delete(ctx context.Context, id string) error {
 	_, err := s.repository.FindById(ctx, id)
 	if err != nil {
-		return errors.New("Product not found")
+		return errors.New("product not found")
 	}
 
 	err = s.repository.Delete(ctx, id)

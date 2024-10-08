@@ -33,8 +33,9 @@ func (r repository) Update(ctx context.Context, supplier *domain.Supplier, id st
 }
 
 func (r repository) FindById(ctx context.Context, id string) (supplier domain.Supplier, err error) {
-	dataset := r.db.From("suppliers").Where(goqu.C("id").Eq(id)).Executor()
+	dataset := r.db.From("suppliers").Where(goqu.C("id").Eq(id)).Where(goqu.C("deleted_at").IsNull()).Executor()
 	_, err = dataset.ScanStructContext(ctx, &supplier)
+
 	return
 }
 

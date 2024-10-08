@@ -20,7 +20,7 @@ type Brand struct {
 type BrandRepository interface {
 	Save(ctx context.Context, brand *Brand) error
 	Update(ctx context.Context, brand *Brand, id string) error
-	FindById(ctx context.Context, id string) (_type Brand, err error)
+	FindById(ctx context.Context, id string) (brand Brand, err error)
 	FindAll(ctx context.Context) (brands []Brand, err error)
 	Delete(ctx context.Context, id string) error
 }
