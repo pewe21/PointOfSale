@@ -18,6 +18,48 @@ func NewHandlerCustomer(customerService domain.CustomerService) domain.CustomerH
 	return &handlerCustomer{CustomerService: customerService}
 }
 
+func (h handlerCustomer) ChangeRole(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
+	defer cancel()
+
+	var req dto.UpdateCustomerRoleRequest
+	param := ctx.Params("customer_id")
+
+	if err := ctx.BodyParser(&req); err != nil {
+		return ctx.SendStatus(http.StatusUnprocessableEntity)
+	}
+
+	err := h.CustomerService.ChangeRole(c, req, param)
+
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess[string]("success change role"))
+}
+
+func (h handlerCustomer) AddRole(ctx *fiber.Ctx) error {
+	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
+	defer cancel()
+
+	var req dto.AddCustomerRoleRequest
+
+	if err := ctx.BodyParser(&req); err != nil {
+		return ctx.SendStatus(http.StatusUnprocessableEntity)
+	}
+
+	err := h.CustomerService.AddRole(c, req)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusInternalServerError,
+			),
+		)
+	}
+	return ctx.Status(http.StatusCreated).JSON(response.ResponseCreateSuccess())
+}
+
 func (h handlerCustomer) Create(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
@@ -27,7 +69,12 @@ func (h handlerCustomer) Create(ctx *fiber.Ctx) error {
 	}
 
 	if err := h.CustomerService.Save(c, req); err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
+		return ctx.Status(http.StatusInternalServerError).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusInternalServerError,
+			),
+		)
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(response.ResponseCreateSuccess())
@@ -41,7 +88,12 @@ func (h handlerCustomer) Update(ctx *fiber.Ctx) error {
 
 	_, err := h.CustomerService.GetById(c, id)
 	if err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(err.Error(), http.StatusBadRequest))
+		return ctx.Status(http.StatusBadRequest).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusBadRequest,
+			),
+		)
 	}
 
 	err = h.CustomerService.Update(c, req, id)

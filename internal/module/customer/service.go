@@ -9,11 +9,13 @@ import (
 )
 
 type service struct {
-	repository domain.CustomerRepository
+	repository        domain.CustomerRepository
+	roleRepository    domain.RoleRepository
+	cusRoleRepository domain.CustomerRolesRepository
 }
 
-func NewService(customerRepository domain.CustomerRepository) domain.CustomerService {
-	return &service{repository: customerRepository}
+func NewService(customerRepository domain.CustomerRepository, roleRepository domain.RoleRepository, cusRoleRepository domain.CustomerRolesRepository) domain.CustomerService {
+	return &service{repository: customerRepository, roleRepository: roleRepository, cusRoleRepository: cusRoleRepository}
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateCustomerRequest) error {
@@ -112,6 +114,62 @@ func (s service) Delete(ctx context.Context, req string) error {
 	err = s.repository.Delete(ctx, req)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (s service) AddRole(ctx context.Context, req dto.AddCustomerRoleRequest) error {
+	customer, err := s.repository.FindById(ctx, req.CustomerId)
+	if customer.Id == "" {
+		return errors.New("customer not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	role, err := s.roleRepository.FindById(ctx, req.RoleId)
+
+	if role.Id == "" {
+		return errors.New("role not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	err = s.cusRoleRepository.Create(ctx, req.RoleId, req.CustomerId)
+	if err != nil {
+		return errors.New("error adding customer role")
+	}
+
+	return nil
+}
+
+func (s service) ChangeRole(ctx context.Context, req dto.UpdateCustomerRoleRequest, customerId string) error {
+	customer, err := s.repository.FindById(ctx, customerId)
+	if customer.Id == "" {
+		return errors.New("customer not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	role, err := s.roleRepository.FindById(ctx, req.RoleId)
+
+	if role.Id == "" {
+		return errors.New("role not found")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	err = s.cusRoleRepository.Update(ctx, req.RoleId, customerId)
+	if err != nil {
+		return errors.New("error changing customer role")
 	}
 
 	return nil
