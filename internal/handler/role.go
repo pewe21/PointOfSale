@@ -31,7 +31,7 @@ func (h handlerRole) Create(ctx *fiber.Ctx) error {
 	err := h.service.Save(c, req)
 
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(),
+		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(response.ResponseCreateSuccess())
@@ -40,11 +40,11 @@ func (h handlerRole) Create(ctx *fiber.Ctx) error {
 func (h handlerRole) Update(ctx *fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), time.Second*5)
 	defer cancel()
-	
+
 	var req dto.UpdateRoleRequest
-	
+
 	id := ctx.Params("id")
-	
+
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
@@ -54,11 +54,13 @@ func (h handlerRole) Update(ctx *fiber.Ctx) error {
 			response.ResponseError(
 				err.Error(),
 				http.StatusInternalServerError,
-				),
-			)
+			),
+		)
 	}
-	
-	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess("update role successfully"))
+
+	return ctx.Status(http.StatusOK).JSON(
+		response.ResponseSuccess("update role successfully"),
+	)
 }
 
 func (h handlerRole) Index(ctx *fiber.Ctx) error {
@@ -67,7 +69,12 @@ func (h handlerRole) Index(ctx *fiber.Ctx) error {
 
 	datas, err := h.service.Index(c)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(),))
+		return ctx.Status(http.StatusInternalServerError).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusInternalServerError,
+			),
+		)
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(datas))
@@ -80,10 +87,17 @@ func (h handlerRole) Delete(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
 	if err := h.service.Delete(c, id); err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(),http.StatusInternalServerError))
+		return ctx.Status(http.StatusInternalServerError).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusInternalServerError,
+			),
+		)
 	}
 
-	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess("delete role successfully"))
+	return ctx.Status(http.StatusOK).JSON(
+		response.ResponseSuccess("delete role successfully"),
+	)
 }
 
 func (h handlerRole) GetById(ctx *fiber.Ctx) error {
@@ -94,12 +108,13 @@ func (h handlerRole) GetById(ctx *fiber.Ctx) error {
 
 	data, err := h.service.GetById(c, id)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(),http.StatusInternalServerError))
+		return ctx.Status(http.StatusInternalServerError).JSON(
+			response.ResponseError(
+				err.Error(),
+				http.StatusInternalServerError,
+			),
+		)
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response.ResponseSuccess(data))
 }
-
-
-
-
