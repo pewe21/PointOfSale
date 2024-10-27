@@ -2,6 +2,8 @@ package role
 
 import (
 	"context"
+	"errors"
+
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 )
@@ -30,8 +32,24 @@ func (s service) Save(ctx context.Context, req dto.CreateRoleRequest) error {
 }
 
 func (s service) Update(ctx context.Context, req dto.UpdateRoleRequest, id string) error {
-	//TODO implement me
-	panic("implement me")
+	data, err := s.repository.FindById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if data.Id == "" {
+		return errors.New("role not exist")
+	}
+
+	role := domain.Role{
+		DisplayName: req.DisplayName,
+	}
+
+	if err := s.repository.Update(ctx, &role, id); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s service) Index(ctx context.Context) ([]dto.RoleData, error) {
@@ -44,6 +62,7 @@ func (s service) Index(ctx context.Context) ([]dto.RoleData, error) {
 
 	for _, v := range rolesData {
 		role := dto.RoleData{
+			Id:          v.Id,
 			Name:        v.Name,
 			DisplayName: v.DisplayName,
 		}
@@ -60,6 +79,10 @@ func (s service) GetById(ctx context.Context, id string) (dto.RoleData, error) {
 		return dto.RoleData{}, err
 	}
 
+	if role.Id == "" {
+		return dto.RoleData{}, errors.New("role not found")
+	}
+
 	newRole := dto.RoleData{
 		Id:          role.Id,
 		Name:        role.Name,
@@ -70,6 +93,20 @@ func (s service) GetById(ctx context.Context, id string) (dto.RoleData, error) {
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	//TODO implement me
-	panic("implement me")
+	role, err := s.repository.FindById(ctx, req)
+
+	if err != nil {
+		return err
+	}
+
+	if role.Id == "" {
+		return errors.New("role not found")
+	}
+
+	err = s.repository.Delete(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

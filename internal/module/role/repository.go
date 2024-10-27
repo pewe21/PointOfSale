@@ -3,9 +3,10 @@ package role
 import (
 	"context"
 	"database/sql"
+	"time"
+
 	"github.com/doug-martin/goqu/v9"
 	"github.com/pewe21/PointOfSale/internal/domain"
-	"time"
 )
 
 type repository struct {
@@ -35,14 +36,14 @@ func (r repository) Update(ctx context.Context, role *domain.Role, id string) er
 }
 
 func (r repository) FindById(ctx context.Context, id string) (role domain.Role, err error) {
-	dataset := r.db.From("roles").Where(goqu.C("id").Eq(id)).Executor()
+	dataset := r.db.From("roles").Where(goqu.C("deleted_at").IsNull()).Where(goqu.C("id").Eq(id)).Executor()
 	_, err = dataset.ScanStructContext(ctx, &role)
 	return
 
 }
 
 func (r repository) FindAll(ctx context.Context) (roles []domain.Role, err error) {
-	dataset := r.db.From("roles").Executor()
+	dataset := r.db.From("roles").Where(goqu.C("deleted_at").IsNull()).Executor()
 	err = dataset.ScanStructsContext(ctx, &roles)
 	return
 }

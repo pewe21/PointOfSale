@@ -12,7 +12,7 @@ type Role struct {
 	Id          string       `json:"id" db:"id" goqu:"skipinsert,skipupdate"`
 	Name        string       `json:"name" db:"name"`
 	DisplayName string       `json:"display_name" db:"display_name"`
-	CreatedAt   time.Time    `json:"created_at" db:"created_at" goqu:"skipupdate"`
+	CreatedAt   time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert,skipupdate"`
 	UpdatedAt   sql.NullTime `json:"updated_at" db:"updated_at"`
 	DeletedAt   sql.NullTime `json:"deleted_at" db:"deleted_at"`
 }

@@ -13,4 +13,5 @@ func NewRoleApi(app *fiber.App, conn *sql.DB) {
 	group.Post("/", role.Create)
 	group.Put("/:id", role.Update)
 	group.Delete("/:id", role.Delete)
+
 }

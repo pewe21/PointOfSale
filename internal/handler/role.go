@@ -2,12 +2,13 @@ package handler
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/response"
-	"net/http"
-	"time"
 )
 
 type handlerRole struct {
