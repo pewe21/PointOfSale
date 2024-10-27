@@ -17,12 +17,25 @@ func NewService(repository domain.RoleRepository) domain.RoleService {
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateRoleRequest) error {
+
+	roles, err := s.repository.FindAll(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	for _, v := range roles {
+		if v.Name == req.Name {
+			return errors.New("role already exist")
+		}
+	}
+
 	role := domain.Role{
 		Name:        req.Name,
 		DisplayName: req.DisplayName,
 	}
 
-	err := s.repository.Save(ctx, &role)
+	err = s.repository.Save(ctx, &role)
 
 	if err != nil {
 		return err

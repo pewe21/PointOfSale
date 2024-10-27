@@ -49,6 +49,37 @@ func TestCreateRole(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, createdRole.Code)
 }
 
+func TestCreateDuplicateRole(t *testing.T) {
+	app, conn := setup()
+	deleteAllRole(conn)
+
+	// create 1st role
+	role := dto.CreateRoleRequest{Name: "Admin", DisplayName: "Administrator"}
+	body, _ := json.Marshal(role)
+
+	req := httptest.NewRequest(http.MethodPost, "/role", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := app.Test(req)
+
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	// create 2nd role
+	body, _ = json.Marshal(role)
+
+	req = httptest.NewRequest(http.MethodPost, "/role", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ = app.Test(req)
+
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+
+	var createdRole struct {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    domain.Role `json:"data"`
+	}
+	json.NewDecoder(resp.Body).Decode(&createdRole)
+	assert.Equal(t, "role already exist", createdRole.Message)
+}
+
 func TestGetRole(t *testing.T) {
 	app, _ := setup()
 
@@ -126,5 +157,23 @@ func TestDeleteRole(t *testing.T) {
 	resp, _ = app.Test(req)
 
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	assert.Empty(t, newFetchedRole.Data)
+}
+
+func TestDeleteWrongIdRole(t *testing.T) {
+	app, _ := setup()
+
+	// Now delete the role
+	req := httptest.NewRequest(http.MethodDelete, "/role/"+"asadasd", nil)
+	resp, _ := app.Test(req)
+
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	var newFetchedRole struct {
+		Code    int            `json:"code"`
+		Message string         `json:"message"`
+		Data    []dto.RoleData `json:"data"`
+	}
+	json.NewDecoder(resp.Body).Decode(&newFetchedRole)
+	assert.Equal(t, newFetchedRole.Message, "role not found")
 	assert.Empty(t, newFetchedRole.Data)
 }
