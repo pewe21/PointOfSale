@@ -21,23 +21,40 @@ func deleteAllRole(conn *sql.DB) {
 	conn.Exec("DELETE FROM roles")
 }
 
-func setup() (*fiber.App, *sql.DB) {
+func setup() *fiber.App {
 	conn := GlobalSetupTest()
+	deleteAllRole(conn)
 	app := fiber.New()
 	api.NewRoleApi(app, conn)
-	return app, conn
+	return app
 }
 
-func TestCreateRole(t *testing.T) {
-	app, conn := setup()
-	deleteAllRole(conn)
-	role := dto.CreateRoleRequest{Name: "Admin", DisplayName: "Administrator"}
+func GlobalCreateRole(t *testing.T, app *fiber.App, role dto.CreateRoleRequest) *http.Response {
 	body, _ := json.Marshal(role)
 
 	req := httptest.NewRequest(http.MethodPost, "/role", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	resp, _ := app.Test(req)
 
+	return resp
+}
+
+func GlobalGetRole(t *testing.T, app *fiber.App) *http.Response {
+	req := httptest.NewRequest(http.MethodGet, "/role", nil)
+	resp, _ := app.Test(req)
+
+	return resp
+}
+
+func TestCreateRole(t *testing.T) {
+	app := setup()
+
+	role := dto.CreateRoleRequest{
+		Name:        "Admin",
+		DisplayName: "Administator",
+	}
+
+	resp := GlobalCreateRole(t, app, role)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var createdRole struct {
@@ -47,28 +64,22 @@ func TestCreateRole(t *testing.T) {
 	}
 	json.NewDecoder(resp.Body).Decode(&createdRole)
 	assert.Equal(t, http.StatusCreated, createdRole.Code)
+	assert.Empty(t, createdRole.Data)
 }
 
 func TestCreateDuplicateRole(t *testing.T) {
-	app, conn := setup()
-	deleteAllRole(conn)
+	app := setup()
 
+	//one data
+	role := dto.CreateRoleRequest{
+		Name:        "Admin",
+		DisplayName: "Administator",
+	}
 	// create 1st role
-	role := dto.CreateRoleRequest{Name: "Admin", DisplayName: "Administrator"}
-	body, _ := json.Marshal(role)
-
-	req := httptest.NewRequest(http.MethodPost, "/role", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	resp, _ := app.Test(req)
-
+	resp := GlobalCreateRole(t, app, role)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	// create 2nd role
-	body, _ = json.Marshal(role)
-
-	req = httptest.NewRequest(http.MethodPost, "/role", bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	resp, _ = app.Test(req)
-
+	resp = GlobalCreateRole(t, app, role)
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	var createdRole struct {
@@ -78,15 +89,22 @@ func TestCreateDuplicateRole(t *testing.T) {
 	}
 	json.NewDecoder(resp.Body).Decode(&createdRole)
 	assert.Equal(t, "role already exist", createdRole.Message)
+	assert.Empty(t, createdRole.Data)
 }
 
 func TestGetRole(t *testing.T) {
-	app, _ := setup()
+	app := setup()
+
+	role := dto.CreateRoleRequest{
+		Name:        "Admin",
+		DisplayName: "Administator",
+	}
+
+	resp := GlobalCreateRole(t, app, role)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// Now get the role
-	req := httptest.NewRequest(http.MethodGet, "/role", nil)
-	resp, _ := app.Test(req)
-
+	resp = GlobalGetRole(t, app)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var fetchedRole struct {
@@ -95,6 +113,7 @@ func TestGetRole(t *testing.T) {
 		Data    []dto.RoleData `json:"data"`
 	}
 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
+	assert.NotEmpty(t, fetchedRole.Data)
 	assert.Equal(t, "Admin", fetchedRole.Data[0].Name)
 }
 
@@ -126,11 +145,17 @@ func TestGetRole(t *testing.T) {
 // }
 
 func TestDeleteRole(t *testing.T) {
-	app, _ := setup()
-	//get the role
-	req := httptest.NewRequest(http.MethodGet, "/role", nil)
-	resp, _ := app.Test(req)
+	app := setup()
+	role := dto.CreateRoleRequest{
+		Name:        "Admin",
+		DisplayName: "Administator",
+	}
 
+	resp := GlobalCreateRole(t, app, role)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	// Now get the role
+	resp = GlobalGetRole(t, app)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var fetchedRole struct {
@@ -139,10 +164,11 @@ func TestDeleteRole(t *testing.T) {
 		Data    []dto.RoleData `json:"data"`
 	}
 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
+	assert.NotEqual(t, "", fetchedRole.Data[0].Id)
 	assert.Equal(t, "Admin", fetchedRole.Data[0].Name)
 
 	// Now delete the role
-	req = httptest.NewRequest(http.MethodDelete, "/role/"+fetchedRole.Data[0].Id, nil)
+	req := httptest.NewRequest(http.MethodDelete, "/role/"+fetchedRole.Data[0].Id, nil)
 	resp, _ = app.Test(req)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -161,7 +187,7 @@ func TestDeleteRole(t *testing.T) {
 }
 
 func TestDeleteWrongIdRole(t *testing.T) {
-	app, _ := setup()
+	app := setup()
 
 	// Now delete the role
 	req := httptest.NewRequest(http.MethodDelete, "/role/"+"asadasd", nil)
