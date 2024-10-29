@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/api"
 	"github.com/pewe21/PointOfSale/internal/config"
 	"github.com/pewe21/PointOfSale/internal/database"
-	"log"
 )
 
 func main() {

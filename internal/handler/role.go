@@ -60,7 +60,7 @@ func (h handlerRole) Update(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(
-		response.ResponseSuccess("update role successfully"),
+		response.ResponseSuccess(""),
 	)
 }
 
