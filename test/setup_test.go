@@ -4,12 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
 	"time"
 
+	_ "github.com/lib/pq"
+
 	"github.com/pewe21/PointOfSale/internal/config"
 )
+
+type FetchedResponse[T any] struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    T      `json:"data"`
+}
 
 func InitializedLoader() *config.Config {
 	return &config.Config{

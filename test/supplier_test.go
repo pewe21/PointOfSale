@@ -40,7 +40,7 @@ func GlobalCreateSupplier(t *testing.T, app *fiber.App, supplier dto.CreateSuppl
 	return resp
 }
 
-func GlobalGetSupplierRole(t *testing.T, app *fiber.App) *http.Response {
+func GlobalGetSupplier(t *testing.T, app *fiber.App) *http.Response {
 	req := httptest.NewRequest(http.MethodGet, "/supplier", nil)
 	resp, _ := app.Test(req)
 
@@ -60,11 +60,8 @@ func TestCreateSupplier(t *testing.T) {
 		resp := GlobalCreateSupplier(t, app, supplier)
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-		var createdSupplier struct {
-			Code    int             `json:"code"`
-			Message string          `json:"message"`
-			Data    domain.Supplier `json:"data"`
-		}
+		var createdSupplier FetchedResponse[domain.Supplier]
+
 		json.NewDecoder(resp.Body).Decode(&createdSupplier)
 		assert.Equal(t, http.StatusCreated, createdSupplier.Code)
 		assert.Empty(t, createdSupplier.Data)
@@ -75,7 +72,7 @@ func TestCreateSupplier(t *testing.T) {
 func TestCreateDuplicateSupplier(t *testing.T) {
 	app := SupplierSetup()
 
-	// 	//one data
+	// data
 	supplier := dto.CreateSupplierRequest{
 		Name:    "Supplier 1",
 		Email:   "romadhon@emal.com",
@@ -100,85 +97,92 @@ func TestCreateDuplicateSupplier(t *testing.T) {
 	})
 }
 
-// func TestGetRole(t *testing.T) {
-// 	app := setup()
+func TestGetSupplier(t *testing.T) {
+	app := SupplierSetup()
 
-// 	role := dto.CreateRoleRequest{
-// 		Name:        "Admin",
-// 		DisplayName: "Administator",
-// 	}
-// 	t.Run("Create Role", func(t *testing.T) {
-// 		resp := GlobalCreateRole(t, app, role)
-// 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
-// 	})
+	supplier := dto.CreateSupplierRequest{
+		Name:    "Supplier 1",
+		Email:   "romadhon@emal.com",
+		Address: "Jl. Jalan",
+		Phone:   "08123456789",
+	}
+	t.Run("Create Supplier", func(t *testing.T) {
+		resp := GlobalCreateSupplier(t, app, supplier)
+		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	})
 
-// 	// Now get the role
-// 	t.Run("Get Role", func(t *testing.T) {
-// 		resp := GlobalGetRole(t, app)
-// 		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// Now get the supplier
+	t.Run("Get Supplier", func(t *testing.T) {
+		resp := GlobalGetSupplier(t, app)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-// 		var fetchedRole struct {
-// 			Code    int            `json:"code"`
-// 			Message string         `json:"message"`
-// 			Data    []dto.RoleData `json:"data"`
-// 		}
-// 		json.NewDecoder(resp.Body).Decode(&fetchedRole)
-// 		assert.NotEmpty(t, fetchedRole.Data)
-// 		assert.Equal(t, "Admin", fetchedRole.Data[0].Name)
-// 	})
-// }
+		var fetchedSupplier FetchedResponse[[]domain.Supplier]
+		json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+		assert.NotEmpty(t, fetchedSupplier.Data)
+		assert.Equal(t, "Supplier 1", fetchedSupplier.Data[0].Name)
+		assert.Equal(t, "romadhon@emal.com", fetchedSupplier.Data[0].Email)
+		assert.Equal(t, "Jl. Jalan", fetchedSupplier.Data[0].Address)
+		assert.Equal(t, "08123456789", fetchedSupplier.Data[0].Phone)
+	})
+}
 
-// func TestUpdateRole(t *testing.T) {
-// 	app := setup()
+func TestUpdateSupplier(t *testing.T) {
+	app := SupplierSetup()
 
-// 	//create role
-// 	role := dto.CreateRoleRequest{
-// 		Name:        "Admin",
-// 		DisplayName: "Administator",
-// 	}
+	//create supplier
+	supplier := dto.CreateSupplierRequest{
+		Name:    "Supplier 1",
+		Email:   "romadhon@emal.com",
+		Address: "Jl. Jalan",
+		Phone:   "08123456789",
+	}
 
-// 	resp := GlobalCreateRole(t, app, role)
-// 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	resp := GlobalCreateSupplier(t, app, supplier)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-// 	// Now get the role to get the id
-// 	resp = GlobalGetRole(t, app)
-// 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// Now get the supplier to get the id
+	resp = GlobalGetSupplier(t, app)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-// 	var fetchedRole struct {
-// 		Code    int            `json:"code"`
-// 		Message string         `json:"message"`
-// 		Data    []dto.RoleData `json:"data"`
-// 	}
-// 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
-// 	assert.Equal(t, "Administator", fetchedRole.Data[0].DisplayName)
+	var fetchedSupplier FetchedResponse[[]domain.Supplier]
+	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+	assert.Equal(t, "Supplier 1", fetchedSupplier.Data[0].Name)
 
-// 	// Now update the role
-// 	updatedRole := dto.UpdateRoleRequest{DisplayName: "Super Editor"}
-// 	body, _ := json.Marshal(updatedRole)
+	// Now update the supplier
+	updatedSupplier := dto.UpdateSupplierRequest{
+		Name:    "Supplier 1 Ubah",
+		Email:   "ubah@emal.com",
+		Address: "Jl. Jalan Ke Kota",
+		Phone:   "08123456789",
+	}
+	body, _ := json.Marshal(updatedSupplier)
 
-// 	req := httptest.NewRequest(http.MethodPut, "/role/"+fetchedRole.Data[0].Id, bytes.NewBuffer(body))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	resp, _ = app.Test(req)
+	newUri := "/supplier/" + fetchedSupplier.Data[0].Id
 
-// 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	req := httptest.NewRequest(http.MethodPut, newUri, bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ = app.Test(req)
 
-// 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
-// 	assert.Equal(t, "success", fetchedRole.Message)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+	assert.Equal(t, "success", fetchedSupplier.Message)
 
-// 	// Now get the role again
-// 	resp = GlobalGetRole(t, app)
-// 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// Now get the supplier again
+	resp = GlobalGetSupplier(t, app)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-// 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
-// 	assert.NotEmpty(t, fetchedRole.Data)
-// 	assert.NotEqual(t, "", fetchedRole.Data[0].Id)
-// 	assert.Equal(t, "Admin", fetchedRole.Data[0].Name)
-// 	assert.Equal(t, "Super Editor", fetchedRole.Data[0].DisplayName)
+	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+	assert.NotEmpty(t, fetchedSupplier.Data)
+	assert.NotEqual(t, "", fetchedSupplier.Data[0].Id)
+	assert.Equal(t, "Supplier 1 Ubah", fetchedSupplier.Data[0].Name)
+	assert.Equal(t, "ubah@emal.com", fetchedSupplier.Data[0].Email)
+	assert.Equal(t, "Jl. Jalan Ke Kota", fetchedSupplier.Data[0].Address)
+	assert.Equal(t, "08123456789", fetchedSupplier.Data[0].Phone)
 
-// }
+}
 
 // func TestDeleteRole(t *testing.T) {
-// 	app := setup()
+// 	app := SupplierSetup()
 // 	role := dto.CreateRoleRequest{
 // 		Name:        "Admin",
 // 		DisplayName: "Administator",
@@ -220,7 +224,7 @@ func TestCreateDuplicateSupplier(t *testing.T) {
 // }
 
 // func TestDeleteWrongIdRole(t *testing.T) {
-// 	app := setup()
+// 	app := SupplierSetup()
 
 // 	// Now delete the role
 // 	req := httptest.NewRequest(http.MethodDelete, "/role/"+"asadasd", nil)
