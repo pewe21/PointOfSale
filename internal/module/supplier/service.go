@@ -109,9 +109,14 @@ func (s service) GetById(ctx context.Context, id string) (dto.SupplierData, erro
 
 func (s service) Delete(ctx context.Context, req string) error {
 
-	_, err := s.repository.FindById(ctx, req)
+	supplier, err := s.repository.FindById(ctx, req)
 	if err != nil {
 		return errors.New("error deleting supplier, supplier not found")
+	}
+
+	if supplier.Id == "" {
+		return errors.New("supplier not found")
+
 	}
 
 	err = s.repository.Delete(ctx, req)

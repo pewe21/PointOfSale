@@ -109,7 +109,7 @@ func (s service) Delete(ctx context.Context, req string) error {
 	role, err := s.repository.FindById(ctx, req)
 
 	if err != nil {
-		return err
+		return errors.New("error deleting role, role not found")
 	}
 
 	if role.Id == "" {
@@ -118,7 +118,7 @@ func (s service) Delete(ctx context.Context, req string) error {
 
 	err = s.repository.Delete(ctx, req)
 	if err != nil {
-		return err
+		return errors.New("error deleting role")
 	}
 
 	return nil

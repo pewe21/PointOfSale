@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// run this test with command "go test ./test/setup_test.go ./test/role_test.go -v"
+// run this test with command "go test ./test/setup_test.go ./test/supplier_test.go -v"
 
 func deleteAllSupplier(conn *sql.DB) {
 	conn.Exec("DELETE FROM suppliers")
@@ -85,7 +85,7 @@ func TestCreateDuplicateSupplier(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	})
 
-	// create 2nd role
+	// create 2nd supplier
 	t.Run("Create Supplier 2", func(t *testing.T) {
 		resp := GlobalCreateSupplier(t, app, supplier)
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
@@ -181,62 +181,52 @@ func TestUpdateSupplier(t *testing.T) {
 
 }
 
-// func TestDeleteRole(t *testing.T) {
-// 	app := SupplierSetup()
-// 	role := dto.CreateRoleRequest{
-// 		Name:        "Admin",
-// 		DisplayName: "Administator",
-// 	}
+func TestDeleteSupplier(t *testing.T) {
+	app := SupplierSetup()
+	supplier := dto.CreateSupplierRequest{
+		Name:    "Supplier 1",
+		Email:   "romadhon@emal.com",
+		Address: "Jl. Jalan",
+		Phone:   "08123456789",
+	}
 
-// 	resp := GlobalCreateRole(t, app, role)
-// 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	resp := GlobalCreateSupplier(t, app, supplier)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-// 	// Now get the role
-// 	resp = GlobalGetRole(t, app)
-// 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// Now get the supplier
+	resp = GlobalGetSupplier(t, app)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-// 	var fetchedRole struct {
-// 		Code    int            `json:"code"`
-// 		Message string         `json:"message"`
-// 		Data    []dto.RoleData `json:"data"`
-// 	}
-// 	json.NewDecoder(resp.Body).Decode(&fetchedRole)
-// 	assert.NotEqual(t, "", fetchedRole.Data[0].Id)
-// 	assert.Equal(t, "Admin", fetchedRole.Data[0].Name)
+	var fetchedSupplier FetchedResponse[[]dto.SupplierData]
+	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+	assert.NotEqual(t, "", fetchedSupplier.Data[0].Id)
+	assert.Equal(t, "Supplier 1", fetchedSupplier.Data[0].Name)
 
-// 	// Now delete the role
-// 	req := httptest.NewRequest(http.MethodDelete, "/role/"+fetchedRole.Data[0].Id, nil)
-// 	resp, _ = app.Test(req)
+	// Now delete the supplier
+	req := httptest.NewRequest(http.MethodDelete, "/supplier/"+fetchedSupplier.Data[0].Id, nil)
+	resp, _ = app.Test(req)
 
-// 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-// 	var newFetchedRole struct {
-// 		Code    int            `json:"code"`
-// 		Message string         `json:"message"`
-// 		Data    []dto.RoleData `json:"data"`
-// 	}
-// 	json.NewDecoder(resp.Body).Decode(&newFetchedRole)
-// 	// Verify the role is deleted
-// 	req = httptest.NewRequest(http.MethodGet, "/role/"+fetchedRole.Data[0].Id, nil)
-// 	resp, _ = app.Test(req)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	var newFetchedSupplier FetchedResponse[[]dto.SupplierData]
+	json.NewDecoder(resp.Body).Decode(&newFetchedSupplier)
+	// Verify the supplier is deleted
+	req = httptest.NewRequest(http.MethodGet, "/supplier/"+fetchedSupplier.Data[0].Id, nil)
+	resp, _ = app.Test(req)
 
-// 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-// 	assert.Empty(t, newFetchedRole.Data)
-// }
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	assert.Empty(t, newFetchedSupplier.Data)
+}
 
-// func TestDeleteWrongIdRole(t *testing.T) {
-// 	app := SupplierSetup()
+func TestDeleteWrongIdSupplier(t *testing.T) {
+	app := SupplierSetup()
 
-// 	// Now delete the role
-// 	req := httptest.NewRequest(http.MethodDelete, "/role/"+"asadasd", nil)
-// 	resp, _ := app.Test(req)
+	// Now delete the supplier
+	req := httptest.NewRequest(http.MethodDelete, "/supplier/"+"asadasd", nil)
+	resp, _ := app.Test(req)
 
-// 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-// 	var newFetchedRole struct {
-// 		Code    int            `json:"code"`
-// 		Message string         `json:"message"`
-// 		Data    []dto.RoleData `json:"data"`
-// 	}
-// 	json.NewDecoder(resp.Body).Decode(&newFetchedRole)
-// 	assert.Equal(t, newFetchedRole.Message, "role not found")
-// 	assert.Empty(t, newFetchedRole.Data)
-// }
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	var newFetchedSupplier FetchedResponse[[]dto.SupplierData]
+	json.NewDecoder(resp.Body).Decode(&newFetchedSupplier)
+	assert.Equal(t, newFetchedSupplier.Message, "supplier not found")
+	assert.Empty(t, newFetchedSupplier.Data)
+}
