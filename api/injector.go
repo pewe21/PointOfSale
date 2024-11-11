@@ -12,7 +12,9 @@ import (
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
 	"github.com/pewe21/PointOfSale/internal/module/brand"
 	"github.com/pewe21/PointOfSale/internal/module/customer"
+	"github.com/pewe21/PointOfSale/internal/module/customer_roles"
 	"github.com/pewe21/PointOfSale/internal/module/product"
+	"github.com/pewe21/PointOfSale/internal/module/role"
 	"github.com/pewe21/PointOfSale/internal/module/supplier"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
@@ -28,7 +30,7 @@ func InitializedAuthentication(conn *sql.DB, cnf *config.Jwt) domain.AuthHandler
 }
 
 func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
-	wire.Build(customer.NewRepository, customer.NewService, handler.NewHandlerCustomer)
+	wire.Build(customer.NewRepository, role.NewRepository, customer_roles.NewCustomerRolesRepository, customer.NewService, handler.NewHandlerCustomer)
 	return nil
 }
 
@@ -44,5 +46,10 @@ func InitializedBrand(conn *sql.DB) domain.BrandHandler {
 
 func InitializedProduct(conn *sql.DB) domain.ProductHandler {
 	wire.Build(product.NewRepository, product.NewService, handler.NewHandlerProduct)
+	return nil
+}
+
+func InitializedRole(conn *sql.DB) domain.RoleHandler {
+	wire.Build(role.NewRepository, role.NewService, handler.NewHandlerRole)
 	return nil
 }

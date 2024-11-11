@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/api"
 	"github.com/pewe21/PointOfSale/internal/config"
 	"github.com/pewe21/PointOfSale/internal/database"
-	"log"
 )
 
 func main() {
@@ -27,6 +28,7 @@ func main() {
 	api.NewSupplierApi(app, conn)
 	api.NewBrandApi(app, conn)
 	api.NewProductApi(app, conn)
+	api.NewRoleApi(app, conn)
 
 	err := app.Listen(conf.Server.Host + ":" + conf.Server.Port)
 	if err != nil {

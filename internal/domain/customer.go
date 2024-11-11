@@ -40,6 +40,8 @@ type CustomerService interface {
 	GetByUsername(ctx context.Context, username string) (customer Customer, err error)
 	GetByEmail(ctx context.Context, email string) (customer Customer, err error)
 	Delete(ctx context.Context, req string) error
+	AddRole(ctx context.Context, req dto.AddCustomerRoleRequest) error
+	ChangeRole(ctx context.Context, req dto.UpdateCustomerRoleRequest, customerId string) error
 }
 
 type CustomerHandler interface {
@@ -50,4 +52,6 @@ type CustomerHandler interface {
 	Index(ctx *fiber.Ctx) error
 	Delete(ctx *fiber.Ctx) error
 	GetById(ctx *fiber.Ctx) error
+	AddRole(ctx *fiber.Ctx) error
+	ChangeRole(ctx *fiber.Ctx) error
 }

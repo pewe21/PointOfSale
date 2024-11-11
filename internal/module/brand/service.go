@@ -3,6 +3,7 @@ package brand
 import (
 	"context"
 	"errors"
+
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 )
@@ -16,6 +17,15 @@ func NewService(repository domain.BrandRepository) domain.BrandService {
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateBrandRequest) error {
+
+	brands, _ := s.repository.FindAll(ctx)
+
+	for _, v := range brands {
+		if v.Name == req.Name {
+			return errors.New("error saving brand, brand already exist")
+		}
+	}
+
 	brand := domain.Brand{
 		Name:        req.Name,
 		Description: req.Description,

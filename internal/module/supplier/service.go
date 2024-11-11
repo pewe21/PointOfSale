@@ -3,6 +3,7 @@ package supplier
 import (
 	"context"
 	"errors"
+
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 )
@@ -16,13 +17,26 @@ func NewService(repository domain.SupplierRepository) domain.SupplierService {
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateSupplierRequest) error {
+
+	datas, err := s.repository.FindAll(ctx)
+
+	if err != nil {
+		return errors.New("error creating supplier")
+	}
+
+	for _, data := range datas {
+		if data.Name == req.Name {
+			return errors.New("supplier already exist")
+		}
+	}
+
 	supplier := domain.Supplier{
 		Name:    req.Name,
 		Email:   req.Email,
 		Address: req.Address,
 		Phone:   req.Phone,
 	}
-	err := s.repository.Save(ctx, &supplier)
+	err = s.repository.Save(ctx, &supplier)
 	if err != nil {
 		return errors.New("error creating supplier")
 	}
@@ -95,9 +109,14 @@ func (s service) GetById(ctx context.Context, id string) (dto.SupplierData, erro
 
 func (s service) Delete(ctx context.Context, req string) error {
 
-	_, err := s.repository.FindById(ctx, req)
+	supplier, err := s.repository.FindById(ctx, req)
 	if err != nil {
 		return errors.New("error deleting supplier, supplier not found")
+	}
+
+	if supplier.Id == "" {
+		return errors.New("supplier not found")
+
 	}
 
 	err = s.repository.Delete(ctx, req)

@@ -14,7 +14,9 @@ import (
 	"github.com/pewe21/PointOfSale/internal/module/authentication"
 	"github.com/pewe21/PointOfSale/internal/module/brand"
 	"github.com/pewe21/PointOfSale/internal/module/customer"
+	"github.com/pewe21/PointOfSale/internal/module/customer_roles"
 	"github.com/pewe21/PointOfSale/internal/module/product"
+	"github.com/pewe21/PointOfSale/internal/module/role"
 	"github.com/pewe21/PointOfSale/internal/module/supplier"
 	"github.com/pewe21/PointOfSale/internal/module/user"
 )
@@ -37,7 +39,9 @@ func InitializedAuthentication(conn *sql.DB, cnf *config.Jwt) domain.AuthHandler
 
 func InitializedCustomer(conn *sql.DB) domain.CustomerHandler {
 	customerRepository := customer.NewRepository(conn)
-	customerService := customer.NewService(customerRepository)
+	roleRepository := role.NewRepository(conn)
+	customerRolesRepository := customer_roles.NewCustomerRolesRepository(conn)
+	customerService := customer.NewService(customerRepository, roleRepository, customerRolesRepository)
 	customerHandler := handler.NewHandlerCustomer(customerService)
 	return customerHandler
 }
@@ -61,4 +65,11 @@ func InitializedProduct(conn *sql.DB) domain.ProductHandler {
 	productService := product.NewService(productRepository)
 	productHandler := handler.NewHandlerProduct(productService)
 	return productHandler
+}
+
+func InitializedRole(conn *sql.DB) domain.RoleHandler {
+	roleRepository := role.NewRepository(conn)
+	roleService := role.NewService(roleRepository)
+	roleHandler := handler.NewHandlerRole(roleService)
+	return roleHandler
 }
