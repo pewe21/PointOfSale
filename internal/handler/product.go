@@ -2,11 +2,12 @@ package handler
 
 import (
 	"context"
+	"net/http"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/response"
-	"net/http"
-	"time"
 )
 
 type handlerProduct struct {
@@ -54,7 +55,7 @@ func (h handlerProduct) Create(ctx *fiber.Ctx) error {
 
 	}
 
-	return ctx.Status(http.StatusOK).JSON(response.ResponseCreateSuccess())
+	return ctx.Status(http.StatusCreated).JSON(response.ResponseCreateSuccess())
 }
 
 func (h handlerProduct) Update(ctx *fiber.Ctx) error {

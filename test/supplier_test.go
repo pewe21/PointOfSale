@@ -19,6 +19,7 @@ import (
 // run this test with command "go test ./test/setup_test.go ./test/supplier_test.go -v"
 
 func deleteAllSupplier(conn *sql.DB) {
+	conn.Exec("DELETE FROM products") // to avoid foreign key constraint
 	conn.Exec("DELETE FROM suppliers")
 }
 
