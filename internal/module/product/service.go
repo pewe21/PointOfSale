@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 	"errors"
+
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 )
@@ -72,6 +73,13 @@ func (s service) GetById(ctx context.Context, id string) (product dto.ProductxDt
 }
 
 func (s service) Create(ctx context.Context, product *domain.Product) error {
+	products, _ := s.repository.FindAll(ctx)
+
+	for _, v := range products {
+		if v.SKU == product.SKU {
+			return errors.New("cannot create product, SKU already exist")
+		}
+	}
 	err := s.repository.Save(ctx, product)
 	return err
 }

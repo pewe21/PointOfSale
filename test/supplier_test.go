@@ -41,6 +41,13 @@ func GlobalCreateSupplier(t *testing.T, app *fiber.App, supplier dto.CreateSuppl
 	return resp
 }
 
+func GlobalGetSupplierId(t *testing.T, app *fiber.App, id string) *http.Response {
+	req := httptest.NewRequest(http.MethodGet, "/supplier/"+id, nil)
+	resp, _ := app.Test(req)
+
+	return resp
+}
+
 func GlobalGetSupplier(t *testing.T, app *fiber.App) *http.Response {
 	req := httptest.NewRequest(http.MethodGet, "/supplier", nil)
 	resp, _ := app.Test(req)
@@ -128,6 +135,7 @@ func TestGetSupplier(t *testing.T) {
 }
 
 func TestUpdateSupplier(t *testing.T) {
+	var supplierId string
 	app := SupplierSetup()
 
 	//create supplier
@@ -138,17 +146,22 @@ func TestUpdateSupplier(t *testing.T) {
 		Phone:   "08123456789",
 	}
 
-	resp := GlobalCreateSupplier(t, app, supplier)
-	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	t.Run("Create Supplier", func(t *testing.T) {
+		resp := GlobalCreateSupplier(t, app, supplier)
+		assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	})
 
 	// Now get the supplier to get the id
-	resp = GlobalGetSupplier(t, app)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-
 	var fetchedSupplier FetchedResponse[[]domain.Supplier]
-	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
-	assert.Equal(t, "Supplier 1", fetchedSupplier.Data[0].Name)
+	t.Run("Get Supplier", func(t *testing.T) {
+		resp := GlobalGetSupplier(t, app)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
+		json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+		assert.Equal(t, "Supplier 1", fetchedSupplier.Data[0].Name)
+		supplierId = fetchedSupplier.Data[0].Id
+	})
 	// Now update the supplier
 	updatedSupplier := dto.UpdateSupplierRequest{
 		Name:    "Supplier 1 Ubah",
@@ -156,29 +169,36 @@ func TestUpdateSupplier(t *testing.T) {
 		Address: "Jl. Jalan Ke Kota",
 		Phone:   "08123456789",
 	}
-	body, _ := json.Marshal(updatedSupplier)
+	t.Run("Update Supplier", func(t *testing.T) {
+		body, _ := json.Marshal(updatedSupplier)
 
-	newUri := "/supplier/" + fetchedSupplier.Data[0].Id
+		newUri := "/supplier/" + supplierId
+		req := httptest.NewRequest(http.MethodPut, newUri, bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		resp, _ := app.Test(req)
 
-	req := httptest.NewRequest(http.MethodPut, newUri, bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	resp, _ = app.Test(req)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
+		assert.Equal(t, "success", fetchedSupplier.Message)
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
-	assert.Equal(t, "success", fetchedSupplier.Message)
+	})
 
 	// Now get the supplier again
-	resp = GlobalGetSupplier(t, app)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	t.Run("Get Supplier After Update", func(t *testing.T) {
+		resp := GlobalGetSupplierId(t, app, supplierId)
 
-	json.NewDecoder(resp.Body).Decode(&fetchedSupplier)
-	assert.NotEmpty(t, fetchedSupplier.Data)
-	assert.NotEqual(t, "", fetchedSupplier.Data[0].Id)
-	assert.Equal(t, "Supplier 1 Ubah", fetchedSupplier.Data[0].Name)
-	assert.Equal(t, "ubah@emal.com", fetchedSupplier.Data[0].Email)
-	assert.Equal(t, "Jl. Jalan Ke Kota", fetchedSupplier.Data[0].Address)
-	assert.Equal(t, "08123456789", fetchedSupplier.Data[0].Phone)
+		var newFetchedSupplier FetchedResponse[domain.Supplier]
+		json.NewDecoder(resp.Body).Decode(&newFetchedSupplier)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		json.NewDecoder(resp.Body).Decode(&newFetchedSupplier)
+		assert.NotEmpty(t, newFetchedSupplier.Data)
+		assert.NotEqual(t, "", supplierId)
+		assert.Equal(t, "Supplier 1 Ubah", newFetchedSupplier.Data.Name)
+		assert.Equal(t, "ubah@emal.com", newFetchedSupplier.Data.Email)
+		assert.Equal(t, "Jl. Jalan Ke Kota", newFetchedSupplier.Data.Address)
+		assert.Equal(t, "08123456789", newFetchedSupplier.Data.Phone)
+	})
 
 }
 
