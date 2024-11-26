@@ -96,7 +96,7 @@ func TestCreateDuplicateSupplier(t *testing.T) {
 	// create 2nd supplier
 	t.Run("Create Supplier 2", func(t *testing.T) {
 		resp := GlobalCreateSupplier(t, app, supplier)
-		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+		assert.Equal(t, http.StatusConflict, resp.StatusCode)
 
 		var createdSupplier response.Response[string]
 		json.NewDecoder(resp.Body).Decode(&createdSupplier)

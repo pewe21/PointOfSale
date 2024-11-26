@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"log"
+	"runtime"
 
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -11,6 +13,7 @@ import (
 )
 
 func main() {
+	runtime.GOMAXPROCS(2)
 	conf := config.InitializedLoader()
 
 	conn := database.InitDB(conf.Database, false)
@@ -18,6 +21,8 @@ func main() {
 	//redis := cache.NewRedisCache(conf.Redis)
 
 	app := fiber.New()
+	app.Use(logger.New())
+
 	//auth
 	api.NewAuthApi(app, conn, &conf.Jwt)
 	app.Use(jwtware.New(jwtware.Config{

@@ -20,15 +20,15 @@ type Brandx struct {
 }
 
 type CreateProductRequest struct {
-	Name       string `json:"name"`
-	SupplierId string `json:"supplier_id"`
-	BrandId    string `json:"brand_id"`
-	SKU        string `json:"sku"`
+	Name       string `json:"name" validate:"required"`
+	SupplierId string `json:"supplier_id" validate:"required,uuid"`
+	BrandId    string `json:"brand_id" validate:"required,uuid"`
+	SKU        string `json:"sku" validate:"required"`
 }
 
 type UpdateProductRequest struct {
-	Name       string `json:"name"`
-	SupplierId string `json:"supplier_id"`
-	BrandId    string `json:"brand_id"`
-	SKU        string `json:"sku"`
+	Name       string `json:"name" validate:"required"`
+	SupplierId string `json:"supplier_id" validate:"required,uuid"`
+	BrandId    string `json:"brand_id" validate:"required,uuid"`
+	SKU        string `json:"sku" validate:"required"`
 }

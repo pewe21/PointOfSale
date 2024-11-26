@@ -28,6 +28,13 @@ func (s service) Save(ctx context.Context, req dto.CreateSupplierRequest) error 
 		if data.Name == req.Name {
 			return errors.New("supplier already exist")
 		}
+		if data.Email == req.Email {
+			return errors.New("email already exist")
+		}
+
+		if data.Phone == req.Phone {
+			return errors.New("phone already exist")
+		}
 	}
 
 	supplier := domain.Supplier{

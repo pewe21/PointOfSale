@@ -23,13 +23,17 @@ func (r repository) Save(ctx context.Context, customer *domain.Customer) error {
 }
 
 func (r repository) Update(ctx context.Context, customer *domain.Customer, id string) error {
+	customer.UpdatedAt = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
 	executor := r.db.Update("customers").Set(customer).Where(goqu.C("id").Eq(id)).Executor()
 	_, err := executor.ExecContext(ctx)
 	return err
 }
 
 func (r repository) FindById(ctx context.Context, id string) (customer domain.Customer, err error) {
-	dataset := r.db.From("customers").Where(goqu.C("id").Eq(id)).Executor()
+	dataset := r.db.From("customers").Where(goqu.C("id").Eq(id)).Where(goqu.C("deleted_at").IsNull()).Executor()
 	_, err = dataset.ScanStructContext(ctx, &customer)
 	return
 }

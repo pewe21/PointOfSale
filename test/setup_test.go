@@ -7,6 +7,8 @@ import (
 	"log"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	_ "github.com/lib/pq"
 
 	"github.com/pewe21/PointOfSale/internal/config"
@@ -71,4 +73,20 @@ func GlobalSetupTest() *sql.DB {
 
 	conn := InitDBTest(conf.Database, false)
 	return conn
+}
+
+func CreateAdminTest(conn *sql.DB) {
+
+	pw, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dataInsert := fmt.Sprintf("insert into users (email,name,password,phone) values ('admin@admin.com','test','%s','081123123123')", string(pw))
+
+	_, err = conn.Exec(dataInsert)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

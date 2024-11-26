@@ -22,7 +22,7 @@ func (s service) Save(ctx context.Context, req dto.CreateBrandRequest) error {
 
 	for _, v := range brands {
 		if v.Name == req.Name {
-			return errors.New("error saving brand, brand already exist")
+			return errors.New("brand already exist")
 		}
 	}
 
@@ -95,9 +95,13 @@ func (s service) GetById(ctx context.Context, id string) (dto.BrandData, error) 
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	_, err := s.repository.FindById(ctx, req)
+	brand, err := s.repository.FindById(ctx, req)
 	if err != nil {
-		return errors.New("error deleting brand, brand not found")
+		return err
+	}
+
+	if brand.Id == "" {
+		return errors.New("brand not found")
 	}
 
 	err = s.repository.Delete(ctx, req)

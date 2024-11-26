@@ -1,1 +1,2 @@
-ALTER TABLE products DROP COLUMN default_price
+ALTER TABLE products
+    DROP COLUMN default_price

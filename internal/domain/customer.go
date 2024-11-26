@@ -9,17 +9,17 @@ import (
 )
 
 type Customer struct {
-	Id        string       `json:"id" db:"id" goqu:"skipinsert,skipupdate"`
-	Name      string       `json:"name" db:"name"`
-	Username  string       `json:"username" db:"username"`
-	Password  string       `json:"password" db:"password"`
-	Email     string       `json:"email" db:"email"`
-	Phone     string       `json:"phone" db:"phone"`
-	Address   string       `json:"address" db:"address"`
-	Verified  *time.Time   `json:"verified" db:"verified"`
-	CreatedAt time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert"`
-	UpdatedAt time.Time    `json:"updated_at" db:"updated_at" `
-	DeletedAt sql.NullTime `json:"deleted_at" db:"deleted_at" `
+	Id   string `json:"id" db:"id" goqu:"skipinsert,skipupdate"`
+	Name string `json:"name" db:"name"`
+	//Username  string       `json:"username" db:"username"`
+	//Password  string       `json:"password" db:"password"`
+	//Email     string       `json:"email" db:"email"`
+	Phone   string `json:"phone" db:"phone"`
+	Address string `json:"address" db:"address"`
+	//Verified  *time.Time   `json:"verified" db:"verified"`
+	CreatedAt time.Time    `json:"created_at" db:"created_at" goqu:"skipinsert,skipupdate"`
+	UpdatedAt sql.NullTime `json:"updated_at" db:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at" db:"deleted_at"`
 }
 
 type CustomerRepository interface {

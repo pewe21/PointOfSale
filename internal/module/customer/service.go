@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type service struct {
@@ -19,18 +18,20 @@ func NewService(customerRepository domain.CustomerRepository, roleRepository dom
 }
 
 func (s service) Save(ctx context.Context, req dto.CreateCustomerRequest) error {
-	password, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.MinCost)
-	if err != nil {
-		return err
-	}
+	var customer domain.Customer
+	//password, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.MinCost)
+	//if err != nil {
+	//	return err
+	//}
 
-	customer := domain.Customer{
-		Name:     req.Name,
-		Username: req.Username,
-		Password: string(password),
-		Email:    req.Email,
+	customer = domain.Customer{
+		Name:  req.Name,
+		Phone: req.Phone,
+		//Username: req.Username,
+		//Password: string(password),
+		//Email:    req.Email,
 	}
-	err = s.repository.Save(ctx, &customer)
+	err := s.repository.Save(ctx, &customer)
 	if err != nil {
 		return errors.New("error creating customer")
 	}
@@ -44,10 +45,10 @@ func (s service) Update(ctx context.Context, req dto.UpdateCustomerRequest, id s
 	}
 
 	customer := domain.Customer{
-		Name:     req.Name,
-		Username: req.Username,
-		Phone:    req.Phone,
-		Address:  req.Address,
+		Name: req.Name,
+		//Username: req.Username,
+		Phone:   req.Phone,
+		Address: req.Address,
 	}
 	err = s.repository.Update(ctx, &customer, id)
 	if err != nil {
@@ -66,10 +67,11 @@ func (s service) Index(ctx context.Context) ([]dto.CustomerData, error) {
 
 	for _, customer := range customers {
 		c := dto.CustomerData{
-			Name:     customer.Name,
-			Username: customer.Username,
-			Email:    customer.Email,
-			Phone:    customer.Phone,
+			Id:   customer.Id,
+			Name: customer.Name,
+			//Username: customer.Username,
+			//Email:    customer.Email,
+			Phone: customer.Phone,
 		}
 
 		data = append(data, c)
@@ -106,14 +108,18 @@ func (s service) GetByEmail(ctx context.Context, email string) (customer domain.
 }
 
 func (s service) Delete(ctx context.Context, req string) error {
-	_, err := s.repository.FindById(ctx, req)
+	customer, err := s.repository.FindById(ctx, req)
 	if err != nil {
 		return err
 	}
 
+	if customer.Id == "" {
+		return errors.New("customer not found")
+	}
+
 	err = s.repository.Delete(ctx, req)
 	if err != nil {
-		return err
+		return errors.New("failed to delete customer")
 	}
 
 	return nil

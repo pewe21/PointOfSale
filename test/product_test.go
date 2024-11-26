@@ -186,11 +186,11 @@ func TestDuplicateProductSKU(t *testing.T) {
 
 		t.Run("Create Duplicate Product SKU", func(t *testing.T) {
 			resp := GlobalCreateProduct(t, app, product)
-			assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+			assert.Equal(t, http.StatusConflict, resp.StatusCode)
 
 			var createdProduct FetchedResponse[domain.Product]
 			json.NewDecoder(resp.Body).Decode(&createdProduct)
-			assert.Equal(t, http.StatusInternalServerError, createdProduct.Code)
+			assert.Equal(t, http.StatusConflict, createdProduct.Code)
 			assert.Equal(t, "cannot create product, SKU already exist", createdProduct.Message)
 			assert.Empty(t, createdProduct.Data)
 		})
