@@ -13,12 +13,14 @@ type repository struct {
 }
 
 func NewRepository(db *sql.DB) domain.BrandRepository {
+
 	return &repository{db: goqu.New("default", db)}
 }
 
 func (r repository) Save(ctx context.Context, brand *domain.Brand) error {
 	executor := r.db.Insert("brands").Rows(brand).Executor()
 	_, err := executor.ExecContext(ctx)
+
 	return err
 }
 

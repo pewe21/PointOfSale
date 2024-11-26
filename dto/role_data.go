@@ -7,19 +7,19 @@ type RoleData struct {
 }
 
 type CreateRoleRequest struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"required"`
 	DisplayName string `json:"display_name"`
 }
 
 type UpdateRoleRequest struct {
-	DisplayName string `json:"display_name"`
+	DisplayName string `json:"display_name" validate:"required"`
 }
 
 type AddCustomerRoleRequest struct {
-	RoleId     string `json:"role_id"`
-	CustomerId string `json:"customer_id"`
+	RoleId     string `json:"role_id" validate:"required,uuid"`
+	CustomerId string `json:"customer_id" validate:"required,uuid"`
 }
 
 type UpdateCustomerRoleRequest struct {
-	RoleId string `json:"role_id"`
+	RoleId string `json:"role_id" validate:"required,uuid"`
 }

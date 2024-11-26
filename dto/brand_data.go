@@ -7,11 +7,11 @@ type BrandData struct {
 }
 
 type CreateBrandRequest struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 }
 
 type UpdateBrandRequest struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 }

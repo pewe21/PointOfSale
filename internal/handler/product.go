@@ -49,8 +49,15 @@ func (h handlerProduct) Create(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
 
+	// if errValid := util.Validate(req); errValid != nil {
+	// 	return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
+	// }
+
 	err := h.service.Create(c, &product)
 	if err != nil {
+		if err.Error() == "cannot create product, SKU already exist" {
+			return ctx.Status(http.StatusConflict).JSON(response.ResponseError(err.Error(), http.StatusConflict))
+		}
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 
 	}
@@ -66,6 +73,10 @@ func (h handlerProduct) Update(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&product); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
+
+	// if errValid := util.Validate(req); errValid != nil {
+	// 	return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
+	// }
 
 	err := h.service.Update(c, &product, id)
 	if err != nil {

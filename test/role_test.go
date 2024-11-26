@@ -82,7 +82,7 @@ func TestCreateDuplicateRole(t *testing.T) {
 	// create 2nd role
 	t.Run("Create Role 2", func(t *testing.T) {
 		resp := GlobalCreateRole(t, app, role)
-		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+		assert.Equal(t, http.StatusConflict, resp.StatusCode)
 
 		var createdRole FetchedResponse[domain.Role]
 		json.NewDecoder(resp.Body).Decode(&createdRole)

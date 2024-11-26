@@ -2,12 +2,15 @@ package handler
 
 import (
 	"context"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/response"
-	"net/http"
-	"time"
+	"github.com/pewe21/PointOfSale/internal/util"
 )
 
 type handlerCustomer struct {
@@ -68,7 +71,12 @@ func (h handlerCustomer) Create(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
 
+	if errValid := util.Validate(req); errValid != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
+	}
+
 	if err := h.CustomerService.Save(c, req); err != nil {
+
 		return ctx.Status(http.StatusInternalServerError).JSON(
 			response.ResponseError(
 				err.Error(),
@@ -85,6 +93,15 @@ func (h handlerCustomer) Update(ctx *fiber.Ctx) error {
 	defer cancel()
 	id := ctx.Params("id")
 	var req dto.UpdateCustomerRequest
+
+	if err := ctx.BodyParser(&req); err != nil {
+		return ctx.Status(http.StatusUnprocessableEntity).JSON(response.ResponseError(err.Error(), http.StatusUnprocessableEntity))
+		// return response.ResError(ctx, http.StatusUnprocessableEntity, nil)
+	}
+
+	if errValid := util.Validate(req); errValid != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
+	}
 
 	_, err := h.CustomerService.GetById(c, id)
 	if err != nil {
@@ -160,6 +177,9 @@ func (h handlerCustomer) Delete(ctx *fiber.Ctx) error {
 
 	err := h.CustomerService.Delete(c, id)
 	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return ctx.Status(http.StatusNotFound).JSON(response.ResponseError(err.Error(), http.StatusNotFound))
+		}
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 	}
 

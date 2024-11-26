@@ -9,6 +9,7 @@ import (
 	"github.com/pewe21/PointOfSale/dto"
 	"github.com/pewe21/PointOfSale/internal/domain"
 	"github.com/pewe21/PointOfSale/internal/response"
+	"github.com/pewe21/PointOfSale/internal/util"
 )
 
 type handlerRole struct {
@@ -29,9 +30,16 @@ func (h handlerRole) Create(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
 	}
 
+	if errValid := util.Validate(req); errValid != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
+	}
+
 	err := h.service.Save(c, req)
 
 	if err != nil {
+		if err.Error() == "role already exist" {
+			return ctx.Status(http.StatusConflict).JSON(response.ResponseError(err.Error(), http.StatusConflict))
+		}
 		return ctx.Status(http.StatusInternalServerError).JSON(response.ResponseError(err.Error(), http.StatusInternalServerError))
 	}
 
@@ -48,6 +56,10 @@ func (h handlerRole) Update(ctx *fiber.Ctx) error {
 
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.SendStatus(http.StatusUnprocessableEntity)
+	}
+
+	if errValid := util.Validate(req); errValid != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(response.ResponseError(errValid.Error(), http.StatusBadRequest))
 	}
 
 	if err := h.service.Update(c, req, id); err != nil {
