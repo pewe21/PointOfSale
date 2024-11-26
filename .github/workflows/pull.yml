@@ -31,23 +31,6 @@ jobs:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
 
-#    services:
-#      postgres:
-#        image: postgres
-#
-#        env:
-#          POSTGRES_PASSWORD: postgres
-#          POSTGRES_USER: postgres
-#          POSTGRES_DB: postgres
-#
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#        ports:
-#          - 5432:5432
-
     environment: GO_POS
     permissions:
       contents: read
@@ -59,6 +42,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.22'
+
+    - name: Migrate database
+      run: "migrate -database postgres://pos:passpos@localhost:5432/test_pointOfSale?sslmode=disable -path internal/database/migration up"
 
     - name: Testing Go
       run: go test -v ./test
